@@ -1,1 +1,7 @@
 c:\users\андрей\documents\visual studio 2013\Projects\Punktown\Punktown\bin\Debug\Punktown.exe.config
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.exe.config
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.csprojResolveAssemblyReference.cache
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.exe
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.pdb
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.exe
+C:\Users\Андрей\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.pdb
