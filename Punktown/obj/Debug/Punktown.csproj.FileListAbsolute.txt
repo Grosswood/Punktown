@@ -5,3 +5,9 @@ C:\Users\Андрей\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.exe
 C:\Users\Андрей\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.pdb
 C:\Users\Андрей\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.exe
 C:\Users\Андрей\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.pdb
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.exe.config
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.exe
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.pdb
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.exe
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\bin\Debug\Punktown.pdb
+C:\Users\Алина\Downloads\Git\Punktown\Punktown\obj\Debug\Punktown.csprojResolveAssemblyReference.cache
