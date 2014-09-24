@@ -50,9 +50,13 @@ namespace Punktown
             return number;
         }
 
-        static void declareSkill(int skillNumber, string[] skillName, float[] skillValue)
+        static void declareSkill(string[] skillName, float[] skillValue)
         {
-            Console.WriteLine("Your {0} is {1}", skillName[skillNumber], skillValue[skillNumber]);
+            int skillNumber = 0;
+            for (skillNumber = 0; skillNumber < 10; skillNumber++)
+            {
+                Console.WriteLine("Your {0} is {1}", skillName[skillNumber], skillValue[skillNumber]);
+            }
         }
 
         static void struckLimb()
@@ -129,24 +133,86 @@ namespace Punktown
             }
         }
 
+        static void wonder (float[] skill, float[] inv, string[] skillName)
+        {
+            Random random = new Random();
+            int location = random.Next(0, 1000);
+            location = 5;
+            if (location < 10)
+            {
+                encounterBrute(skill, inv, skillName);
+            }
+            else
+            {
+                Console.WriteLine("Hey, I've been here! Probably gave a circle or something.");
+            }
+        }
+
+        /*        static void encouterTurn (float[] skill, float[] inv, string[] skillName, float[] vulnurability, int mainSkill, int secondarySkill)
+                {
+                    encouterTurn(skill, inv, skillName, vulnurability, mainSkill, secondarySkill);
+                }*/
+
+        static void encounterBrute (float[] skill, float[] inv, string[] skillName)
+        {
+            float[] vulnurability = new float[11] {100, 0.5f, 0, 0, 0, 1, 0.5f, 2, 0.5f, 1, 0.5f};
+            Console.WriteLine("Huge brute with aggressive intentions is approaching");
+            do
+            {
+                Console.WriteLine("Choose main skill in action('23' to remind options)");
+                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23});
+                if (mainSkill == 23)
+                {
+                    declareSkill(skillName, skill);
+                    Console.WriteLine("Enter main action");
+                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+                }
+                Console.WriteLine("Choose secondary action");
+                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                vulnurability[0] = vulnurability[0] - ((D(20)) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) - ((D(10)) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill]);
+                Console.WriteLine("Hit points left {0}", vulnurability[0]);
+            } while (vulnurability[0]>0);
+            Console.WriteLine("Brute is defeated!");
+        }
+
+        static void whereTo (float[] skill, float[] inv, string[] skillName)
+        {
+            Console.WriteLine("What will you do now? (type 'help' for available options)");
+            switch (Console.ReadLine())
+            {
+                case ("help"):
+                    Console.WriteLine("Type '1' to venture to new random location");
+                    Console.WriteLine("Type '2' to visit huckster");
+                    whereTo(skill, inv, skillName);
+                    break;
+                case ("1"):
+                    Console.WriteLine("Ha! Adventure!");
+                    wonder(skill, inv, skillName);
+                    whereTo(skill, inv, skillName);
+                    break;
+                case ("2"):
+                    Console.WriteLine("'Huckster' is temporal exit from game for now");
+                    break;
+                default:
+                    Console.WriteLine("Is it in Africa? Sorry, I have no idea how to get there");
+                    whereTo(skill, inv, skillName);
+                    break;
+            }
+        }
+
         static void firstChapter(float[] skill, float[] inv, string[] skillName)
         {
-            awake();
-            charCreationStory(skill, inv, skillName);
-            
+            //awake();
+            //charCreationStory(skill, inv, skillName);
+            whereTo(skill, inv, skillName);
         }
 
         static void Main(string[] args)
         {
             float[] skill = new float[10] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             float[] inv = new float[10] { 1, 0, 1, 0, 0.5f, 1, 0, 1, 1, 1 };
-            string[] skillName = new string[10] { "Acrobatics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
-            /*for (int skillNumber = 0; skillNumber < 10; skillNumber++)
-            {
-                declareSkill(skillNumber, skillName, skill);
-            }*/
+            string[] skillName = new string[10] { "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
             firstChapter(skill, inv, skillName);
-            
         }
     }
 }
