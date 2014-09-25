@@ -53,9 +53,9 @@ namespace Punktown
         static void declareSkill(string[] skillName, float[] skillValue)
         {
             int skillNumber = 0;
-            for (skillNumber = 0; skillNumber < 10; skillNumber++)
+            for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
             {
-                Console.WriteLine("Your {0} is {1}", skillName[skillNumber], skillValue[skillNumber]);
+                Console.WriteLine("Your {0}({2}) is {1}", skillName[skillNumber], skillValue[skillNumber], skillNumber);
             }
         }
 
@@ -148,14 +148,50 @@ namespace Punktown
             }
         }
 
-        /*        static void encouterTurn (float[] skill, float[] inv, string[] skillName, float[] vulnurability, int mainSkill, int secondarySkill)
+        static void comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName)
+        {
+            if ((mainSkill == 1 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 1))
+            {
+                Console.WriteLine("Run away combo!");
+            }
+            if ((mainSkill == 5 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 5))
+            {
+                Console.WriteLine("Backstab combo!");
+            }
+            if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
+            {
+                Console.WriteLine("Fire from cover combo!");
+            }
+            if ((mainSkill == 3 && secondarySkill == 6) || (mainSkill == 6 && secondarySkill == 3))
+            {
+                Console.WriteLine("Full inspect combo! You've got some information about current encounter");
+                int skillNumber = 0;
+                for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
                 {
-                    encouterTurn(skill, inv, skillName, vulnurability, mainSkill, secondarySkill);
-                }*/
+                    if (vulnurability[skillNumber] > 1)
+                    {
+                        Console.WriteLine("{0} is extremely effective", skillName[skillNumber]);
+                    }
+                    else if (vulnurability[skillNumber] == 1)
+                    {
+                        Console.WriteLine("{0} has average effect", skillName[skillNumber]);
+                    }
+                    else if (vulnurability[skillNumber] != 0)
+                    {
+                        Console.WriteLine("{0} is less useful", skillName[skillNumber]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0} is totally harmless", skillName[skillNumber]);
+                    }
+                }
+            }
+        }
 
         static void encounterBrute (float[] skill, float[] inv, string[] skillName)
         {
-            float[] vulnurability = new float[11] {100, 0.5f, 0, 0, 0, 1, 0.5f, 2, 0.5f, 1, 0.5f};
+            float[] vulnurability = new float[11] { 100, 0.5f, 0, 0, 0, 1, 0.5f, 2, 0.5f, 1, 0.5f };
+            float[] comboVulnurability = new float[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
@@ -169,6 +205,7 @@ namespace Punktown
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName);
                 vulnurability[0] = vulnurability[0] - ((D(20)) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) - ((D(10)) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill]);
                 Console.WriteLine("Hit points left {0}", vulnurability[0]);
             } while (vulnurability[0]>0);
@@ -209,9 +246,9 @@ namespace Punktown
 
         static void Main(string[] args)
         {
-            float[] skill = new float[10] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            float[] inv = new float[10] { 1, 0, 1, 0, 0.5f, 1, 0, 1, 1, 1 };
-            string[] skillName = new string[10] { "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
+            float[] skill = new float[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            float[] inv = new float[11] {0, 1, 0, 1, 0, 0.5f, 1, 0, 1, 1, 1 };
+            string[] skillName = new string[11] {"Hit points", "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
             firstChapter(skill, inv, skillName);
         }
     }
