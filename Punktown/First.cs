@@ -148,23 +148,28 @@ namespace Punktown
             }
         }
 
-        static void comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName)
+        static int comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName)
         {
+            int comboFactor = 1;
             if ((mainSkill == 1 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 1))
             {
                 Console.WriteLine("Run away combo!");
+                comboFactor = 1;
             }
-            if ((mainSkill == 5 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 5))
+            else if ((mainSkill == 5 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 5))
             {
-                Console.WriteLine("Backstab combo!");
+                Console.WriteLine("Backstab combo! x4 Damage!");
+                comboFactor = 4;
             }
-            if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
+            else if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
             {
-                Console.WriteLine("Fire from cover combo!");
+                Console.WriteLine("Fire from cover combo! x2 Damage");
+                comboFactor = 2;
             }
-            if ((mainSkill == 3 && secondarySkill == 6) || (mainSkill == 6 && secondarySkill == 3))
+            else if ((mainSkill == 3 && secondarySkill == 6) || (mainSkill == 6 && secondarySkill == 3))
             {
                 Console.WriteLine("Full inspect combo! You've got some information about current encounter");
+                comboFactor = 1;
                 int skillNumber = 0;
                 for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
                 {
@@ -186,6 +191,7 @@ namespace Punktown
                     }
                 }
             }
+            return comboFactor;
         }
 
         static void encounterBrute (float[] skill, float[] inv, string[] skillName)
@@ -205,8 +211,8 @@ namespace Punktown
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-                comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName);
-                vulnurability[0] = vulnurability[0] - ((D(20)) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) - ((D(10)) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill]);
+                int comboFactor = comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName);
+                vulnurability[0] = vulnurability[0] - (((D(20) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) + (D(10) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill])) * comboFactor);
                 Console.WriteLine("Hit points left {0}", vulnurability[0]);
             } while (vulnurability[0]>0);
             Console.WriteLine("Brute is defeated!");
