@@ -168,10 +168,36 @@ namespace Punktown
                 Console.WriteLine("Hey, I've been here! Probably gave a circle or something.");
             }
         }
-
-        static int comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName, float[] encounterStatus) //, string[] statusName
+        /*
+        static void fullInspect ()
         {
-            int comboFactor = 1;
+                Console.WriteLine("Full inspect combo! You've got some information about current encounter");
+                damage = 1;
+                int skillNumber = 0;
+                for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
+                {
+                    if (armor[skillNumber] > 1)
+                    {
+                        Console.WriteLine("{0} is extremely effective", skillName[skillNumber]);
+                    }
+                    else if (armor[skillNumber] == 1)
+                    {
+                        Console.WriteLine("{0} has average effect", skillName[skillNumber]);
+                    }
+                    else if (armor[skillNumber] != 0)
+                    {
+                        Console.WriteLine("{0} is less useful", skillName[skillNumber]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("{0} is totally harmless", skillName[skillNumber]);
+                    }
+                }
+        }
+        */
+        static int comboCheck(int mainSkill, int secondarySkill, int[] armor, float[] encounterStatus)
+        {
+            int damage = 0;
             if (mainSkill == 9 || secondarySkill == 9)
             {
                 if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
@@ -182,62 +208,40 @@ namespace Punktown
                 {
                     Console.WriteLine("Stealth action!You now hidden");
                 }
-                comboFactor = 1;
+                damage = 0;
             }
             if ((mainSkill == 1 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 1))
             {
                 Console.WriteLine("Run away combo!");
-                comboFactor = 1;
+                damage = 1;
             }
             else if ((mainSkill == 5 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 5))
             {
-                Console.WriteLine("Backstab combo! x4 Damage!");
-                comboFactor = 4;
+                Console.WriteLine("Backstab combo! x3 Damage!");
+                damage = 3;
             }
             else if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
             {
                 Console.WriteLine("Fire from ambush combo! x2 Damage");
-                comboFactor = 2;
+                damage = 2;
             }
             else if ((mainSkill == 7 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 7))
             {
-                Console.WriteLine("Fire from cover combo! x2 Damage");
-                comboFactor = 2;
+                Console.WriteLine("Fire from cover combo!");
+                damage = 1;
             }
             else if ((mainSkill == 3 && secondarySkill == 6) || (mainSkill == 6 && secondarySkill == 3))
             {
-                Console.WriteLine("Full inspect combo! You've got some information about current encounter");
-                comboFactor = 1;
-                int skillNumber = 0;
-                for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
-                {
-                    if (vulnurability[skillNumber] > 1)
-                    {
-                        Console.WriteLine("{0} is extremely effective", skillName[skillNumber]);
-                    }
-                    else if (vulnurability[skillNumber] == 1)
-                    {
-                        Console.WriteLine("{0} has average effect", skillName[skillNumber]);
-                    }
-                    else if (vulnurability[skillNumber] != 0)
-                    {
-                        Console.WriteLine("{0} is less useful", skillName[skillNumber]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("{0} is totally harmless", skillName[skillNumber]);
-                    }
-                }
+                Console.WriteLine("Full inspect combo");
+                damage = 1;
             }
-            return comboFactor;
+            return damage;
         }
 
         static void encounterBrute (float[] skill, float[] inv, string[] skillName)
         {
-            float[] vulnurability = new float[11] { 100, 0.5f, 0, 0, 0, 1, 0.5f, 2, 0.5f, 1, 0.5f };
-            float[] encounterStatus = new float[5] { 5, 0, 0, 0, 0 };
-            //string[] statusName = new string[5] { "Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus" };
-            float[] comboVulnurability = new float[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            int[] armor = new int[11] { 100, 7, 21, 5, 21, 12, 8, 7, 8, 6, 9 };
+            float[] encounterStatus = new float[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
@@ -252,10 +256,10 @@ namespace Punktown
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-                int comboFactor = comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName, encounterStatus);
-                vulnurability[0] = vulnurability[0] - (((D(20) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) + (D(10) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill])) * comboFactor);
-                Console.WriteLine("Hit points left {0}", vulnurability[0]);
-            } while (vulnurability[0]>0);
+                int comboFactor = comboCheck(mainSkill, secondarySkill, armor, encounterStatus);
+                armor[0] = armor[0] - comboFactor;
+                Console.WriteLine("Hit points left {0}", armor[0]);
+            } while (armor[0]>0);
             Console.WriteLine("Brute is defeated!");
         }
 
