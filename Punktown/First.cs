@@ -59,6 +59,27 @@ namespace Punktown
             }
         }
 
+        static void declareStatus(float[] encounterStatus)
+        {
+            Console.WriteLine("Distance is {0} meters", encounterStatus[0]);
+            if (encounterStatus[1] == 1)
+            {
+                Console.WriteLine("You are hidden");
+            }
+            if (encounterStatus[2] == 1)
+            {
+                Console.WriteLine("You have cover");
+            }
+            if (encounterStatus[3] == 0)
+            {
+                Console.WriteLine("He is not aware of you");
+            }
+            if (encounterStatus[4] == 1)
+            {
+                Console.WriteLine("This message is not supposed to appear");
+            }
+        }
+
         static void struckLimb()
         {
             string[] limbs = new string[] { "left leg", "right leg", "left arm", "right arm", "torso", "head" };
@@ -148,9 +169,21 @@ namespace Punktown
             }
         }
 
-        static int comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName)
+        static int comboCheck(int mainSkill, int secondarySkill, float[] vulnurability, float[] comboVulnurability, string[] skillName, float[] encounterStatus) //, string[] statusName
         {
             int comboFactor = 1;
+            if (mainSkill == 9 || secondarySkill == 9)
+            {
+                if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
+                {
+                    Console.WriteLine("You broke your stealth with your another action");
+                }
+                else
+                {
+                    Console.WriteLine("Stealth action!You now hidden");
+                }
+                comboFactor = 1;
+            }
             if ((mainSkill == 1 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 1))
             {
                 Console.WriteLine("Run away combo!");
@@ -162,6 +195,11 @@ namespace Punktown
                 comboFactor = 4;
             }
             else if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
+            {
+                Console.WriteLine("Fire from ambush combo! x2 Damage");
+                comboFactor = 2;
+            }
+            else if ((mainSkill == 7 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 7))
             {
                 Console.WriteLine("Fire from cover combo! x2 Damage");
                 comboFactor = 2;
@@ -197,10 +235,13 @@ namespace Punktown
         static void encounterBrute (float[] skill, float[] inv, string[] skillName)
         {
             float[] vulnurability = new float[11] { 100, 0.5f, 0, 0, 0, 1, 0.5f, 2, 0.5f, 1, 0.5f };
+            float[] encounterStatus = new float[5] { 5, 0, 0, 0, 0 };
+            //string[] statusName = new string[5] { "Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus" };
             float[] comboVulnurability = new float[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
+                declareStatus(encounterStatus);
                 Console.WriteLine("Choose main skill in action('23' to remind options)");
                 int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23});
                 if (mainSkill == 23)
@@ -211,7 +252,7 @@ namespace Punktown
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-                int comboFactor = comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName);
+                int comboFactor = comboCheck(mainSkill, secondarySkill, vulnurability, comboVulnurability, skillName, encounterStatus);
                 vulnurability[0] = vulnurability[0] - (((D(20) * skill[mainSkill] * inv[mainSkill] * vulnurability[mainSkill]) + (D(10) * 0.5f * skill[secondarySkill] * inv[secondarySkill] * vulnurability[secondarySkill])) * comboFactor);
                 Console.WriteLine("Hit points left {0}", vulnurability[0]);
             } while (vulnurability[0]>0);
@@ -253,7 +294,7 @@ namespace Punktown
         static void Main(string[] args)
         {
             float[] skill = new float[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            float[] inv = new float[11] {0, 1, 0, 1, 0, 0.5f, 1, 0, 1, 1, 1 };
+            float[] inv = new float[11] {0.25f, 1, 0.25f, 1, 0, 0.5f, 1, 0.25f, 1, 1, 1 };
             string[] skillName = new string[11] {"Hit points", "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
             firstChapter(skill, inv, skillName);
         }
