@@ -169,6 +169,7 @@ namespace Punktown
             }
         }
         /*
+         * 
         static void fullInspect ()
         {
                 Console.WriteLine("Full inspect combo! You've got some information about current encounter");
