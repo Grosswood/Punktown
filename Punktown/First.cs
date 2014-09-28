@@ -50,16 +50,16 @@ namespace Punktown
             return number;
         }
 
-        static void declareSkill(string[] skillName, float[] skillValue)
+        static void declareSkill(string[] skillName, int[] skill, int[] inv)
         {
             int skillNumber = 0;
             for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
             {
-                Console.WriteLine("Your {0}({2}) is {1}", skillName[skillNumber], skillValue[skillNumber], skillNumber);
+                Console.WriteLine("Your {0}({2}) is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
             }
         }
 
-        static void declareStatus(float[] encounterStatus)
+        static void declareStatus(int[] encounterStatus)
         {
             Console.WriteLine("Distance is {0} meters", encounterStatus[0]);
             if (encounterStatus[1] == 1)
@@ -109,7 +109,7 @@ namespace Punktown
             Console.WriteLine("You see something like console with some keys. You do remember that it have something to do with geting out of here, but details elude you");
         }
 
-        static void charCreationStory(float[] skill, float[] inv, string[] skillName)
+        static void charCreationStory(int[] skill, int[] inv, string[] skillName)
         {
             Console.WriteLine("[Now charecter creation will start. During this event all your action is conditionally sucessful. Some desicion leads to more satisfying consecvenses. It's required to build up your style of game. Don't worry, later you will be able to completely reassign your skills if you wish]");
             Console.WriteLine("Choose action to perform:");
@@ -154,7 +154,7 @@ namespace Punktown
             }
         }
 
-        static void wonder (float[] skill, float[] inv, string[] skillName)
+        static void wonder (int[] skill, int[] inv, string[] skillName)
         {
             Random random = new Random();
             int location = random.Next(0, 1000);
@@ -168,81 +168,40 @@ namespace Punktown
                 Console.WriteLine("Hey, I've been here! Probably gave a circle or something.");
             }
         }
-        /*
-         * 
-        static void fullInspect ()
+
+        static void stealthAction(int mainSkill, int secondarySkill, int[] armor, float[] encounterStatus, int damage)
         {
-                Console.WriteLine("Full inspect combo! You've got some information about current encounter");
-                damage = 1;
-                int skillNumber = 0;
-                for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
-                {
-                    if (armor[skillNumber] > 1)
-                    {
-                        Console.WriteLine("{0} is extremely effective", skillName[skillNumber]);
-                    }
-                    else if (armor[skillNumber] == 1)
-                    {
-                        Console.WriteLine("{0} has average effect", skillName[skillNumber]);
-                    }
-                    else if (armor[skillNumber] != 0)
-                    {
-                        Console.WriteLine("{0} is less useful", skillName[skillNumber]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("{0} is totally harmless", skillName[skillNumber]);
-                    }
-                }
+            if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
+            {
+                Console.WriteLine("You broke your stealth with your another action");
+                encounterStatus[1] = 0;
+            }
+            else if (encounterStatus[1] == 0)
+            {
+                Console.WriteLine("Stealth action! You now hidden");
+                encounterStatus[1] = 1;
+            }
+            damage = 0;
         }
-        */
-        static int comboCheck(int mainSkill, int secondarySkill, int[] armor, float[] encounterStatus)
+
+        static int withoutCombo(int[] skill, int[] inv, int mainSkill, int secondarySkill, int[] armor, int[] encounterStatus)
         {
             int damage = 0;
-            if (mainSkill == 9 || secondarySkill == 9)
+            if (mainSkill == 1 || secondarySkill == 1)
             {
-                if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
-                {
-                    Console.WriteLine("You broke your stealth with your another action");
-                }
-                else
-                {
-                    Console.WriteLine("Stealth action!You now hidden");
-                }
-                damage = 0;
+                encounterStatus[0]++;
             }
-            if ((mainSkill == 1 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 1))
+            if (mainSkill == 2 || secondarySkill == 2)
             {
-                Console.WriteLine("Run away combo!");
-                damage = 1;
-            }
-            else if ((mainSkill == 5 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 5))
-            {
-                Console.WriteLine("Backstab combo! x3 Damage!");
-                damage = 3;
-            }
-            else if ((mainSkill == 7 && secondarySkill == 9) || (mainSkill == 9 && secondarySkill == 7))
-            {
-                Console.WriteLine("Fire from ambush combo! x2 Damage");
-                damage = 2;
-            }
-            else if ((mainSkill == 7 && secondarySkill == 10) || (mainSkill == 10 && secondarySkill == 7))
-            {
-                Console.WriteLine("Fire from cover combo!");
-                damage = 1;
-            }
-            else if ((mainSkill == 3 && secondarySkill == 6) || (mainSkill == 6 && secondarySkill == 3))
-            {
-                Console.WriteLine("Full inspect combo");
-                damage = 1;
+
             }
             return damage;
         }
 
-        static void encounterBrute (float[] skill, float[] inv, string[] skillName)
+        static void encounterBrute (int[] skill, int[] inv, string[] skillName)
         {
             int[] armor = new int[11] { 100, 7, 21, 5, 21, 12, 8, 7, 8, 6, 9 };
-            float[] encounterStatus = new float[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
+            int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
@@ -251,20 +210,22 @@ namespace Punktown
                 int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23});
                 if (mainSkill == 23)
                 {
-                    declareSkill(skillName, skill);
+                    declareSkill(skillName, skill, inv);
                     Console.WriteLine("Enter main action");
                     mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-                int comboFactor = comboCheck(mainSkill, secondarySkill, armor, encounterStatus);
-                armor[0] = armor[0] - comboFactor;
+                int damage = withoutCombo(skill, inv, mainSkill, secondarySkill, armor, encounterStatus);
+                armor[0] = armor[0] - damage;
+                if (encounterStatus[0] > 0)
+                {encounterStatus[0]--;}
                 Console.WriteLine("Hit points left {0}", armor[0]);
             } while (armor[0]>0);
             Console.WriteLine("Brute is defeated!");
         }
 
-        static void whereTo (float[] skill, float[] inv, string[] skillName)
+        static void whereTo (int[] skill, int[] inv, string[] skillName)
         {
             Console.WriteLine("What will you do now? (type 'help' for available options)");
             switch (Console.ReadLine())
@@ -289,7 +250,7 @@ namespace Punktown
             }
         }
 
-        static void firstChapter(float[] skill, float[] inv, string[] skillName)
+        static void firstChapter(int[] skill, int[] inv, string[] skillName)
         {
             //awake();
             //charCreationStory(skill, inv, skillName);
@@ -298,8 +259,8 @@ namespace Punktown
 
         static void Main(string[] args)
         {
-            float[] skill = new float[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            float[] inv = new float[11] {0.25f, 1, 0.25f, 1, 0, 0.5f, 1, 0.25f, 1, 1, 1 };
+            int[] skill = new int[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            int[] inv = new int[11] {1, 4, 1, 4, 0, 2, 4, 1, 4, 4, 4 };
             string[] skillName = new string[11] {"Hit points", "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
             firstChapter(skill, inv, skillName);
         }
