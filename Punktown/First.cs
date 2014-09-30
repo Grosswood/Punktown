@@ -8,18 +8,21 @@ namespace Punktown
 {
     class First
     {
-        static int d(int dice)
+        private static readonly Random random = new Random();
+
+        private static readonly object syncLock = new object();
+
+        public static int d(int dice)
         {
-//Private random            
-            Random random = new Random();
-            return (random.Next(1, dice));
+            lock (syncLock)
+            {
+                return random.Next(1, dice);
+            }
         }
 
         static int D(int dice)
         {
-//Public random
-            Random random = new Random();
-            int diceValue = random.Next(1, dice);
+            int diceValue = d(dice);
             Console.WriteLine("d" + dice + " rolls for " + diceValue);
             return (diceValue);
         }
@@ -55,7 +58,7 @@ namespace Punktown
             int skillNumber = 0;
             for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
             {
-                Console.WriteLine("Your {0}({2}) is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
+                Console.WriteLine("Input {2} to use {0}. His value is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
             }
         }
 
@@ -169,6 +172,25 @@ namespace Punktown
             }
         }
 
+        static int missOrHit(int skillNumber, int[] armor, int[] inv, int[] skill, string[] skillName)
+        {
+            if (armor[skillNumber] == 100)
+            {
+                Console.WriteLine("{0} is useless here!", skillName[skillNumber]);
+                skillNumber = 0;
+            }
+            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armor[skillNumber])
+            {
+                Console.WriteLine("{0} misses!", skillName[skillNumber]);
+                skillNumber = 0;
+            }
+            else
+            {
+                Console.WriteLine("{0} hits!", skillName[skillNumber]);
+            }
+            return skillNumber;
+        }
+
         static void stealthAction(int mainSkill, int secondarySkill, int[] armor, float[] encounterStatus, int damage)
         {
             if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
@@ -187,41 +209,43 @@ namespace Punktown
         static int withoutCombo(int[] skill, int[] inv, int mainSkill, int secondarySkill, int[] armor, int[] encounterStatus)
         {
             int damage = 0;
-            if (mainSkill == 1 || secondarySkill == 1)
+            if (mainSkill > 0)
             {
-                encounterStatus[0]++;
-            }
-            if (mainSkill == 2 || secondarySkill == 2)
-            {
-
+                damage = D(6);
             }
             return damage;
         }
 
         static void encounterBrute (int[] skill, int[] inv, string[] skillName)
         {
-            int[] armor = new int[11] { 100, 7, 21, 5, 21, 12, 8, 7, 8, 6, 9 };
+            int[] armor = new int[11] { 200, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 };
             int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
                 declareStatus(encounterStatus);
                 Console.WriteLine("Choose main skill in action('23' to remind options)");
-                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 4, 5, 7, 23 });
+                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
                 if (mainSkill == 23)
                 {
                     declareSkill(skillName, skill, inv);
                     Console.WriteLine("Enter main action");
-                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 4, 5, 7 });
+                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5 });
                 }
                 Console.WriteLine("Choose secondary action");
-                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 3, 6, 8, 9, 10 });
+                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
+
+                mainSkill = missOrHit(mainSkill, armor, inv, skill, skillName);
+                secondarySkill = missOrHit(secondarySkill, armor, inv, skill, skillName);
+
                 int damage = withoutCombo(skill, inv, mainSkill, secondarySkill, armor, encounterStatus);
                 armor[0] = armor[0] - damage;
+
                 if (encounterStatus[0] > 0)
                 {encounterStatus[0]--;}
+
                 Console.WriteLine("Hit points left {0}", armor[0]);
-            } while (armor[0]>0);
+            } while (armor[0] > 0);
             Console.WriteLine("Brute is defeated!");
         }
 
@@ -261,7 +285,7 @@ namespace Punktown
         {
             int[] skill = new int[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
             int[] inv = new int[11] {0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-            string[] skillName = new string[11] { "Hit points", "Athletics (both main and secondary)", "Hacking (main)", "Knowledge (secondary)", "Lockpick (main)", "Melee (main)", "Notice (secondary)", "Ranged (main)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
+            string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
             firstChapter(skill, inv, skillName);
         }
     }
