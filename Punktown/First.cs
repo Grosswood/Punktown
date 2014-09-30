@@ -207,15 +207,15 @@ namespace Punktown
             {
                 declareStatus(encounterStatus);
                 Console.WriteLine("Choose main skill in action('23' to remind options)");
-                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23});
+                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 4, 5, 7, 23 });
                 if (mainSkill == 23)
                 {
                     declareSkill(skillName, skill, inv);
                     Console.WriteLine("Enter main action");
-                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 4, 5, 7 });
                 }
                 Console.WriteLine("Choose secondary action");
-                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 3, 6, 8, 9, 10 });
                 int damage = withoutCombo(skill, inv, mainSkill, secondarySkill, armor, encounterStatus);
                 armor[0] = armor[0] - damage;
                 if (encounterStatus[0] > 0)
@@ -260,8 +260,8 @@ namespace Punktown
         static void Main(string[] args)
         {
             int[] skill = new int[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            int[] inv = new int[11] {1, 4, 1, 4, 0, 2, 4, 1, 4, 4, 4 };
-            string[] skillName = new string[11] {"Hit points", "Athletics", "Hacking", "Knowledge", "Lockpick", "Melee", "Notice", "Ranged", "Speech", "Stealth", "Streetwise" };
+            int[] inv = new int[11] {0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+            string[] skillName = new string[11] { "Hit points", "Athletics (both main and secondary)", "Hacking (main)", "Knowledge (secondary)", "Lockpick (main)", "Melee (main)", "Notice (secondary)", "Ranged (main)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
             firstChapter(skill, inv, skillName);
         }
     }
