@@ -53,7 +53,7 @@ namespace Punktown
             return number;
         }
 
-        static void declareSkill(string[] skillName, int[] skill, int[] inv)
+        static void declareSkill()
         {
             int skillNumber = 0;
             for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
@@ -112,7 +112,7 @@ namespace Punktown
             Console.WriteLine("You see something like console with some keys. You do remember that it have something to do with geting out of here, but details elude you");
         }
 
-        static void charCreationStory(int[] skill, int[] inv, string[] skillName)
+        static void charCreationStory()
         {
             Console.WriteLine("[Now charecter creation will start. During this event all your action is conditionally sucessful. Some desicion leads to more satisfying consecvenses. It's required to build up your style of game. Don't worry, later you will be able to completely reassign your skills if you wish]");
             Console.WriteLine("Choose action to perform:");
@@ -157,14 +157,14 @@ namespace Punktown
             }
         }
 
-        static void wonder (int[] skill, int[] inv, string[] skillName)
+        static void wonder ()
         {
             Random random = new Random();
             int location = random.Next(0, 1000);
             location = 5;
             if (location < 10)
             {
-                encounterBrute(skill, inv, skillName);
+                encounterBrute();
             }
             else
             {
@@ -172,7 +172,7 @@ namespace Punktown
             }
         }
 
-        static int missOrHit(int skillNumber, int[] armor, int[] inv, int[] skill, string[] skillName)
+        static int missOrHit(int skillNumber, int[] armor)
         {
             if (armor[skillNumber] == 100)
             {
@@ -206,7 +206,7 @@ namespace Punktown
             damage = 0;
         }
 
-        static int withoutCombo(int[] skill, int[] inv, int mainSkill, int secondarySkill, int[] armor, int[] encounterStatus)
+        static int withoutCombo(int mainSkill, int secondarySkill, int[] armor, int[] encounterStatus)
         {
             int damage = 0;
             if (mainSkill > 0)
@@ -216,7 +216,7 @@ namespace Punktown
             return damage;
         }
 
-        static void encounterBrute (int[] skill, int[] inv, string[] skillName)
+        static void encounterBrute ()
         {
             int[] armor = new int[11] { 200, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 };
             int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
@@ -228,17 +228,17 @@ namespace Punktown
                 int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
                 if (mainSkill == 23)
                 {
-                    declareSkill(skillName, skill, inv);
+                    declareSkill();
                     Console.WriteLine("Enter main action");
                     mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5 });
                 }
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
 
-                mainSkill = missOrHit(mainSkill, armor, inv, skill, skillName);
-                secondarySkill = missOrHit(secondarySkill, armor, inv, skill, skillName);
+                mainSkill = missOrHit(mainSkill, armor);
+                secondarySkill = missOrHit(secondarySkill, armor);
 
-                int damage = withoutCombo(skill, inv, mainSkill, secondarySkill, armor, encounterStatus);
+                int damage = withoutCombo(mainSkill, secondarySkill, armor, encounterStatus);
                 armor[0] = armor[0] - damage;
 
                 if (encounterStatus[0] > 0)
@@ -249,7 +249,7 @@ namespace Punktown
             Console.WriteLine("Brute is defeated!");
         }
 
-        static void whereTo (int[] skill, int[] inv, string[] skillName)
+        static void whereTo ()
         {
             Console.WriteLine("What will you do now? (type 'help' for available options)");
             switch (Console.ReadLine())
@@ -257,36 +257,37 @@ namespace Punktown
                 case ("help"):
                     Console.WriteLine("Type '1' to venture to new random location");
                     Console.WriteLine("Type '2' to visit huckster");
-                    whereTo(skill, inv, skillName);
+                    whereTo();
                     break;
                 case ("1"):
                     Console.WriteLine("Ha! Adventure!");
-                    wonder(skill, inv, skillName);
-                    whereTo(skill, inv, skillName);
+                    wonder();
+                    whereTo();
                     break;
                 case ("2"):
                     Console.WriteLine("'Huckster' is temporal exit from game for now");
                     break;
                 default:
                     Console.WriteLine("Is it in Africa? Sorry, I have no idea how to get there");
-                    whereTo(skill, inv, skillName);
+                    whereTo();
                     break;
             }
         }
 
-        static void firstChapter(int[] skill, int[] inv, string[] skillName)
+        static void firstChapter()
         {
             //awake();
             //charCreationStory(skill, inv, skillName);
-            whereTo(skill, inv, skillName);
+            whereTo();
         }
+
+        public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+        public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
 
         static void Main(string[] args)
         {
-            int[] skill = new int[11] {100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-            int[] inv = new int[11] {0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-            string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
-            firstChapter(skill, inv, skillName);
+            firstChapter();
         }
     }
 }
