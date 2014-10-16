@@ -9,8 +9,10 @@ namespace Punktown
     class First
     {
         private static readonly Random random = new Random();
-
         private static readonly object syncLock = new object();
+        public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+        public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
 
         public static int d(int dice)
         {
@@ -211,7 +213,12 @@ namespace Punktown
             int damage = 0;
             if (mainSkill > 0)
             {
-                damage = D(6);
+                Console.WriteLine("Damage done:");
+                damage = D(30);
+            }
+            else
+            {
+                Console.WriteLine("No damage done in this turn");
             }
             return damage;
         }
@@ -280,10 +287,6 @@ namespace Punktown
             //charCreationStory(skill, inv, skillName);
             whereTo();
         }
-
-        public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-        public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
 
         static void Main(string[] args)
         {
