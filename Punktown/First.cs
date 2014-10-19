@@ -73,11 +73,11 @@ namespace Punktown
             }
             if (encounterStatus[2] == 1)
             {
-                Console.WriteLine("You have cover");
+                Console.WriteLine("This message is not supposed to appear");
             }
             if (encounterStatus[3] == 0)
             {
-                Console.WriteLine("He is not aware of you");
+                Console.WriteLine("He is not aware of your presence");
             }
             if (encounterStatus[4] == 1)
             {
@@ -174,14 +174,14 @@ namespace Punktown
             }
         }
 
-        static int missOrHit(int skillNumber, int[] armor)
+        static int missOrHit(int skillNumber, int armorValue)
         {
-            if (armor[skillNumber] == 100)
+            if (armorValue == 100)
             {
                 Console.WriteLine("{0} is useless here!", skillName[skillNumber]);
                 skillNumber = 0;
             }
-            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armor[skillNumber])
+            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armorValue)
             {
                 Console.WriteLine("{0} misses!", skillName[skillNumber]);
                 skillNumber = 0;
@@ -193,28 +193,33 @@ namespace Punktown
             return skillNumber;
         }
 
-        static void stealthAction(int mainSkill, int secondarySkill, int[] armor, float[] encounterStatus, int damage)
+        static int stealthBreakCheck(int mainSkill, int secondarySkill)
         {
-            if (mainSkill == 1 || mainSkill == 5 || mainSkill == 7 || mainSkill == 8 || secondarySkill == 1 || secondarySkill == 5 || secondarySkill == 7 || secondarySkill == 8)
+            int stealthStatus = 1;
+            if (mainSkill == 1 || mainSkill == 3)
             {
-                Console.WriteLine("You broke your stealth with your another action");
-                encounterStatus[1] = 0;
+                Console.WriteLine("You broke your stealth with {0}", skillName[mainSkill]);
+                stealthStatus = 0;
             }
-            else if (encounterStatus[1] == 0)
+            else if (secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8)
             {
-                Console.WriteLine("Stealth action! You now hidden");
-                encounterStatus[1] = 1;
+                Console.WriteLine("You broke your stealth with {0}", skillName[secondarySkill]);
+                stealthStatus = 0;
             }
-            damage = 0;
+            return stealthStatus;
         }
 
-        static int withoutCombo(int mainSkill, int secondarySkill, int[] armor, int[] encounterStatus)
+        static int withoutCombo(int mainSkill, int armorValue)
         {
             int damage = 0;
+            int weaponQuality = 0;
             if (mainSkill > 0)
             {
-                Console.WriteLine("Damage done:");
-                damage = D(30);
+                for (weaponQuality = 0; weaponQuality < inv[mainSkill]; weaponQuality++)
+                {
+                    damage = damage + D(6);
+                }
+                Console.WriteLine("Damage done: {0}", damage);
             }
             else
             {
@@ -225,8 +230,8 @@ namespace Punktown
 
         static void encounterBrute ()
         {
-            int[] armor = new int[11] { 200, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 };
-            int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Cover", "Awareness", "AnotherStatus"
+            int[] armor = new int[11] { 50, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 };
+            int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "OneMoreStatus", "Awareness", "AnotherStatus"
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
             do
             {
@@ -242,16 +247,34 @@ namespace Punktown
                 Console.WriteLine("Choose secondary action");
                 int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
 
-                mainSkill = missOrHit(mainSkill, armor);
-                secondarySkill = missOrHit(secondarySkill, armor);
 
-                int damage = withoutCombo(mainSkill, secondarySkill, armor, encounterStatus);
-                armor[0] = armor[0] - damage;
-
+                if (encounterStatus[1] == 1)
+                {
+                    encounterStatus[1] = stealthBreakCheck(mainSkill, secondarySkill);
+                }
+                if (encounterStatus[3] == 0 && (mainSkill == 1 || mainSkill == 3 || secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8))
+                {
+                    encounterStatus[3] = 1;
+                    Console.WriteLine("He is now aware of you!");
+                }
                 if (encounterStatus[0] > 0)
-                {encounterStatus[0]--;}
+                {
+                    encounterStatus[0]--;
+                    if (encounterStatus[3] == 1)
+                    {
+                        encounterStatus[0]--;
+                    }
+                }
 
-                Console.WriteLine("Hit points left {0}", armor[0]);
+
+                mainSkill = missOrHit(mainSkill, armor[mainSkill]);
+                secondarySkill = missOrHit(secondarySkill, armor[secondarySkill]);
+
+                armor[0] = armor[0] - withoutCombo(mainSkill, armor[mainSkill]);
+
+
+
+                Console.WriteLine("Hit points left: {0}", armor[0]);
             } while (armor[0] > 0);
             Console.WriteLine("Brute is defeated!");
         }
