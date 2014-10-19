@@ -13,6 +13,8 @@ namespace Punktown
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
+        public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "OneMoreStatus", "AnotherStatus"
 
         public static int d(int dice)
         {
@@ -64,20 +66,20 @@ namespace Punktown
             }
         }
 
-        static void declareStatus(int[] encounterStatus)
+        static void declareStatus()
         {
             Console.WriteLine("Distance is {0} meters", encounterStatus[0]);
             if (encounterStatus[1] == 1)
             {
                 Console.WriteLine("You are hidden");
             }
-            if (encounterStatus[2] == 1)
-            {
-                Console.WriteLine("This message is not supposed to appear");
-            }
-            if (encounterStatus[3] == 0)
+            if (encounterStatus[2] == 0)
             {
                 Console.WriteLine("He is not aware of your presence");
+            }
+            if (encounterStatus[3] == 1)
+            {
+                Console.WriteLine("This message is not supposed to appear");
             }
             if (encounterStatus[4] == 1)
             {
@@ -174,14 +176,14 @@ namespace Punktown
             }
         }
 
-        static int missOrHit(int skillNumber, int armorValue)
+        static int missOrHit(int skillNumber)
         {
-            if (armorValue == 100)
+            if (armor[skillNumber] == 100)
             {
                 Console.WriteLine("{0} is useless here!", skillName[skillNumber]);
                 skillNumber = 0;
             }
-            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armorValue)
+            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armor[skillNumber])
             {
                 Console.WriteLine("{0} misses!", skillName[skillNumber]);
                 skillNumber = 0;
@@ -191,6 +193,25 @@ namespace Punktown
                 Console.WriteLine("{0} hits!", skillName[skillNumber]);
             }
             return skillNumber;
+        }
+
+        static void armorInput (int [] valuesToInput)
+        {
+            int position = 0;
+            for (position = 0; position < armor.Length; position++)
+            {
+                armor[position] = valuesToInput[position];
+            }
+        }
+
+        static void resetEncounterStatus()
+        {
+            //Is it wise not to create new local variable?
+            for (encounterStatus[0] = 1; encounterStatus[0] < encounterStatus.Length; encounterStatus[0]++)
+            {
+                encounterStatus[encounterStatus[0]] = 0;
+            }
+            encounterStatus[0] = 10;
         }
 
         static int stealthBreakCheck(int mainSkill, int secondarySkill)
@@ -209,7 +230,7 @@ namespace Punktown
             return stealthStatus;
         }
 
-        static int withoutCombo(int mainSkill, int armorValue)
+        static int withoutCombo(int mainSkill)
         {
             int damage = 0;
             int weaponQuality = 0;
@@ -230,12 +251,12 @@ namespace Punktown
 
         static void encounterBrute ()
         {
-            int[] armor = new int[11] { 50, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 };
-            int[] encounterStatus = new int[5] { 5, 0, 0, 0, 0 }; //"Range", "Hiddenness", "OneMoreStatus", "Awareness", "AnotherStatus"
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
+            armorInput(new int[11] { 50, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 });
+            resetEncounterStatus();
             do
             {
-                declareStatus(encounterStatus);
+                declareStatus();
                 Console.WriteLine("Choose main skill in action('23' to remind options)");
                 int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
                 if (mainSkill == 23)
@@ -252,25 +273,25 @@ namespace Punktown
                 {
                     encounterStatus[1] = stealthBreakCheck(mainSkill, secondarySkill);
                 }
-                if (encounterStatus[3] == 0 && (mainSkill == 1 || mainSkill == 3 || secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8))
+                if (encounterStatus[2] == 0 && (mainSkill == 1 || mainSkill == 3 || secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8))
                 {
-                    encounterStatus[3] = 1;
+                    encounterStatus[2] = 1;
                     Console.WriteLine("He is now aware of you!");
                 }
                 if (encounterStatus[0] > 0)
                 {
                     encounterStatus[0]--;
-                    if (encounterStatus[3] == 1)
+                    if ((encounterStatus[2] == 1) && (encounterStatus[0] > 0))
                     {
                         encounterStatus[0]--;
                     }
                 }
 
 
-                mainSkill = missOrHit(mainSkill, armor[mainSkill]);
-                secondarySkill = missOrHit(secondarySkill, armor[secondarySkill]);
+                mainSkill = missOrHit(mainSkill);
+                secondarySkill = missOrHit(secondarySkill);
 
-                armor[0] = armor[0] - withoutCombo(mainSkill, armor[mainSkill]);
+                armor[0] = armor[0] - withoutCombo(mainSkill);
 
 
 
@@ -295,7 +316,7 @@ namespace Punktown
                     whereTo();
                     break;
                 case ("2"):
-                    Console.WriteLine("'Huckster' is temporal exit from game for now");
+                    Console.WriteLine("'Huckster' is correct way to exit from game for now");
                     break;
                 default:
                     Console.WriteLine("Is it in Africa? Sorry, I have no idea how to get there");
