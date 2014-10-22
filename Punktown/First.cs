@@ -10,6 +10,8 @@ namespace Punktown
     {
         private static readonly Random random = new Random();
         private static readonly object syncLock = new object();
+        public static int mainSkill = 0;
+        public static int secondarySkill = 0;
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
@@ -181,12 +183,12 @@ namespace Punktown
             if (armor[skillNumber] == 100)
             {
                 Console.WriteLine("{0} is useless here!", skillName[skillNumber]);
-                skillNumber = 0;
+                skillNumber = -skillNumber;
             }
             else if (skill[skillNumber] + inv[skillNumber] + D(20) < armor[skillNumber])
             {
                 Console.WriteLine("{0} misses!", skillName[skillNumber]);
-                skillNumber = 0;
+                skillNumber = -skillNumber;
             }
             else
             {
@@ -214,23 +216,23 @@ namespace Punktown
             encounterStatus[0] = 10;
         }
 
-        static int stealthBreakCheck(int mainSkill, int secondarySkill)
+        static int stealthBreakCheck()
         {
             int stealthStatus = 1;
-            if (mainSkill == 1 || mainSkill == 3)
+            if (Math.Abs(mainSkill) == 1 || Math.Abs(mainSkill) == 3)
             {
-                Console.WriteLine("You broke your stealth with {0}", skillName[mainSkill]);
+                Console.WriteLine("You broke your stealth with {0}", skillName[Math.Abs(mainSkill)]);
                 stealthStatus = 0;
             }
-            else if (secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8)
+            else if (Math.Abs(secondarySkill) == 1 || Math.Abs(secondarySkill) == 3 || Math.Abs(secondarySkill) == 8)
             {
-                Console.WriteLine("You broke your stealth with {0}", skillName[secondarySkill]);
+                Console.WriteLine("You broke your stealth with {0}", skillName[Math.Abs(secondarySkill)]);
                 stealthStatus = 0;
             }
             return stealthStatus;
         }
 
-        static int withoutCombo(int mainSkill)
+        static int mainSkillDamage()
         {
             int damage = 0;
             int weaponQuality = 0;
@@ -249,6 +251,34 @@ namespace Punktown
             return damage;
         }
 
+        static void statusUpdate ()
+        {
+            if (encounterStatus[1] == 1)
+            {
+                encounterStatus[1] = stealthBreakCheck();
+            }
+            if (encounterStatus[2] == 0 && (Math.Abs(mainSkill) == 1 || Math.Abs(mainSkill) == 3 || Math.Abs(secondarySkill) == 1 || Math.Abs(secondarySkill) == 3 || Math.Abs(secondarySkill) == 8))
+            {
+                encounterStatus[2] = 1;
+                Console.WriteLine("He is now aware of you!");
+            }
+            if (encounterStatus[0] > 0)
+            {
+                encounterStatus[0]--;
+                if ((encounterStatus[2] == 1) && (encounterStatus[0] > 0))
+                {
+                    encounterStatus[0]--;
+                }
+            }
+        }
+
+        static int secondaryEffects()
+        {
+            int damageMultiplier = 1;
+
+            return damageMultiplier;
+        }
+
         static void encounterBrute ()
         {
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
@@ -258,7 +288,7 @@ namespace Punktown
             {
                 declareStatus();
                 Console.WriteLine("Choose main skill in action('23' to remind options)");
-                int mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
+                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
                 if (mainSkill == 23)
                 {
                     declareSkill();
@@ -266,35 +296,12 @@ namespace Punktown
                     mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5 });
                 }
                 Console.WriteLine("Choose secondary action");
-                int secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
-
-
-                if (encounterStatus[1] == 1)
-                {
-                    encounterStatus[1] = stealthBreakCheck(mainSkill, secondarySkill);
-                }
-                if (encounterStatus[2] == 0 && (mainSkill == 1 || mainSkill == 3 || secondarySkill == 1 || secondarySkill == 3 || secondarySkill == 8))
-                {
-                    encounterStatus[2] = 1;
-                    Console.WriteLine("He is now aware of you!");
-                }
-                if (encounterStatus[0] > 0)
-                {
-                    encounterStatus[0]--;
-                    if ((encounterStatus[2] == 1) && (encounterStatus[0] > 0))
-                    {
-                        encounterStatus[0]--;
-                    }
-                }
-
-
+                secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
+                
                 mainSkill = missOrHit(mainSkill);
                 secondarySkill = missOrHit(secondarySkill);
-
-                armor[0] = armor[0] - withoutCombo(mainSkill);
-
-
-
+                statusUpdate();
+                armor[0] = armor[0] - (mainSkillDamage() * secondaryEffects());
                 Console.WriteLine("Hit points left: {0}", armor[0]);
             } while (armor[0] > 0);
             Console.WriteLine("Brute is defeated!");
