@@ -16,7 +16,7 @@ namespace Punktown
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "AnotherStatus"
+        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "Horrified"
 
         public static int d(int dice)
         {
@@ -85,7 +85,7 @@ namespace Punktown
             }
             if (encounterStatus[4] == 1)
             {
-                Console.WriteLine("This message is not supposed to appear");
+                Console.WriteLine("He is afraid of you");
             }
         }
 
@@ -322,7 +322,18 @@ namespace Punktown
 
         static void speachSkill()
         {
-            //void for now
+            Console.WriteLine("Please decide what you're going to tell to him ('1' to intimidate, '2' to distract)");
+            int option = preciseInput(Console.ReadLine(), new int[] { 1, 2});
+            if (option == 1)
+            {
+                Console.WriteLine("He is now afraid of you and will surrender on low hp");
+                encounterStatus[4] = 1;
+            }
+            else
+            {
+                Console.WriteLine("He is distracted and takes additional damage");
+                armor[0] = armor[0] - D(6);
+            }
         }
 
         static void actionInput()
@@ -424,8 +435,15 @@ namespace Punktown
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
                 Console.WriteLine("Hit points left: {0}", armor[0]);
-            } while (armor[0] > 0);
-            Console.WriteLine("Brute is defeated!");
+            } while (armor[0] - (encounterStatus[4] * 20) > 0);
+            if (armor[0] > 0)
+            {
+                Console.WriteLine("Brute surrendered!");
+            }
+            else
+            {
+                Console.WriteLine("Brute is defeated!");
+            }
         }
 
         static void whereTo ()
