@@ -14,9 +14,9 @@ namespace Punktown
         public static int secondarySkill = 0;
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static string[] skillName = new string[11] { "Hit points", "Athletics (main or secondary)", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
+        public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "OneMoreStatus", "AnotherStatus"
+        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "AnotherStatus"
 
         public static int d(int dice)
         {
@@ -81,7 +81,7 @@ namespace Punktown
             }
             if (encounterStatus[3] == 1)
             {
-                Console.WriteLine("This message is not supposed to appear");
+                Console.WriteLine("You know his weak points");
             }
             if (encounterStatus[4] == 1)
             {
@@ -185,14 +185,22 @@ namespace Punktown
                 Console.WriteLine("{0} is useless here!", skillName[skillNumber]);
                 skillNumber = -skillNumber;
             }
-            else if (skill[skillNumber] + inv[skillNumber] + D(20) < armor[skillNumber])
-            {
-                Console.WriteLine("{0} misses!", skillName[skillNumber]);
-                skillNumber = -skillNumber;
-            }
             else
             {
-                Console.WriteLine("{0} hits!", skillName[skillNumber]);
+                int result = D(20);
+                if (skill[skillNumber] + inv[skillNumber] + result < armor[skillNumber])
+                {
+                    Console.WriteLine("{0} misses!", skillName[skillNumber]);
+                    skillNumber = -skillNumber;
+                }
+                else
+                {
+                    Console.WriteLine("{0} hits!", skillName[skillNumber]);
+                    if (result > 8 && skillNumber < 5 && encounterStatus[3] == 1)
+                    {
+                        encounterStatus[3] = 2;
+                    }
+                }
             }
             return skillNumber;
         }
@@ -219,12 +227,12 @@ namespace Punktown
         static int stealthBreakCheck()
         {
             int stealthStatus = 1;
-            if (Math.Abs(mainSkill) == 1 || Math.Abs(mainSkill) == 3)
+            if (Math.Abs(mainSkill) == 2 || Math.Abs(mainSkill) == 4)
             {
                 Console.WriteLine("You broke your stealth with {0}", skillName[Math.Abs(mainSkill)]);
                 stealthStatus = 0;
             }
-            else if (Math.Abs(secondarySkill) == 1 || Math.Abs(secondarySkill) == 3 || Math.Abs(secondarySkill) == 8)
+            else if (Math.Abs(secondarySkill) == 5 || Math.Abs(secondarySkill) == 8)
             {
                 Console.WriteLine("You broke your stealth with {0}", skillName[Math.Abs(secondarySkill)]);
                 stealthStatus = 0;
@@ -236,11 +244,17 @@ namespace Punktown
         {
             int damage = 0;
             int weaponQuality = 0;
-            if (mainSkill > 0)
+            if (mainSkill > 0 && mainSkill < 5)
             {
                 for (weaponQuality = 0; weaponQuality < inv[mainSkill]; weaponQuality++)
                 {
                     damage = damage + D(6);
+                }
+                if (encounterStatus[3] == 2)
+                {
+                    Console.WriteLine("Critical strike! x2 damage!");
+                    damage = damage * 2;
+                    encounterStatus[3] = 1;
                 }
                 Console.WriteLine("Damage done: {0}", damage);
             }
@@ -257,7 +271,7 @@ namespace Punktown
             {
                 encounterStatus[1] = stealthBreakCheck();
             }
-            if (encounterStatus[2] == 0 && (Math.Abs(mainSkill) == 1 || Math.Abs(mainSkill) == 3 || Math.Abs(secondarySkill) == 1 || Math.Abs(secondarySkill) == 3 || Math.Abs(secondarySkill) == 8))
+            if (encounterStatus[2] == 0 && (Math.Abs(mainSkill) == 2 || Math.Abs(mainSkill) == 4 || Math.Abs(secondarySkill) == 5 || Math.Abs(secondarySkill) == 8))
             {
                 encounterStatus[2] = 1;
                 Console.WriteLine("He is now aware of you!");
@@ -272,36 +286,143 @@ namespace Punktown
             }
         }
 
-        static int secondaryEffects()
+        static void noticeSkill ()
+        {
+            int skillNumber = d(10);
+            if (armor[skillNumber] == 100)
+            {
+                Console.WriteLine("You have noticed that {0} is useless here", skillName[skillNumber]);
+            }
+            if (armor[skillNumber] < 8)
+            {
+                Console.WriteLine("You have noticed that he is weak against {0}", skillName[skillNumber]);
+            }
+            else if (armor[skillNumber] < 13)
+            {
+                Console.WriteLine("You have noticed that his protection is average against {0}", skillName[skillNumber]);
+            }
+            else
+            {
+                Console.WriteLine("You have noticed that he has strong protection versus {0}", skillName[skillNumber]);
+            }
+        }
+
+        static void knowledgeSkill ()
+        {
+            if (encounterStatus[3] == 1)
+            {
+                Console.WriteLine("There's no point in using knowledge more than once");
+            }
+            else
+            {
+                encounterStatus[3] = 1;
+                Console.WriteLine("You know his weak points. Critical strike unlocked!");
+            }
+        }
+
+        static void speachSkill()
+        {
+            //void for now
+        }
+
+        static void actionInput()
+        {
+            Console.WriteLine("Choose main skill in action (It could main or secondary skill, '23' to remind options)");
+            mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
+            if (mainSkill == 23)
+            {
+                declareSkill();
+                Console.WriteLine("Enter main action");
+                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            }
+            Console.WriteLine("Choose secondary action (It is always secondary skill)");
+            secondarySkill = preciseInput(Console.ReadLine(), new int[] { 5, 6, 7, 8, 9, 10 });
+        }
+        
+        static int damageMultiplier()
         {
             int damageMultiplier = 1;
-
+            if (mainSkill == 2 && encounterStatus[1] == 1)
+            {
+                Console.WriteLine("Fire from the cover! x2 damage!");
+                damageMultiplier = 2;
+            }
+            if (mainSkill == 4 && secondarySkill == 5 && encounterStatus[1] == 1)
+            {
+                Console.WriteLine("Sinister charge! x4 damage!!!");
+                damageMultiplier = 4;
+            }
+            else if (mainSkill == 4 && encounterStatus[1] == 1)
+            {
+                Console.WriteLine("Backstab! x3 damage!");
+                damageMultiplier = 3;
+            }
+            else if (mainSkill == 4 && secondarySkill == 5)
+            {
+                Console.WriteLine("Charge! x2 damage!");
+                damageMultiplier = 2;
+            }
             return damageMultiplier;
+        }
+        
+        static void secondaryEffects()
+        {
+            if (mainSkill == 5)
+            {
+                encounterStatus[0] = encounterStatus[0] + 2;
+            }
+            if (secondarySkill == 5)
+            {
+                encounterStatus[0] = encounterStatus[0] + 2;
+            }
+            if (mainSkill == 6)
+            {
+                knowledgeSkill();
+            } 
+            if (secondarySkill == 6)
+            {
+                knowledgeSkill();
+            }
+            if (mainSkill == 7)
+            {
+                noticeSkill();
+            }
+            if (secondarySkill == 7)
+            {
+                noticeSkill();
+            }
+            if (mainSkill == 8)
+            {
+                speachSkill();
+            }
+            if (secondarySkill == 8)
+            {
+                speachSkill();
+            }
+            if (mainSkill == 9)
+            {
+                encounterStatus[1] = 1;
+            }
+            if (secondarySkill == 9)
+            {
+                encounterStatus[1] = 1;
+            }
         }
 
         static void encounterBrute ()
         {
             Console.WriteLine("Huge brute with aggressive intentions is approaching");
-            armorInput(new int[11] { 50, 10, 100, 10, 10, 10, 10, 10, 10, 10, 10 });
+            armorInput(new int[11] { 50, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10 });
             resetEncounterStatus();
             do
             {
                 declareStatus();
-                Console.WriteLine("Choose main skill in action('23' to remind options)");
-                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 23 });
-                if (mainSkill == 23)
-                {
-                    declareSkill();
-                    Console.WriteLine("Enter main action");
-                    mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5 });
-                }
-                Console.WriteLine("Choose secondary action");
-                secondarySkill = preciseInput(Console.ReadLine(), new int[] { 1, 6, 7, 8, 9, 10 });
-                
+                actionInput();
                 mainSkill = missOrHit(mainSkill);
                 secondarySkill = missOrHit(secondarySkill);
+                secondaryEffects();
+                armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
-                armor[0] = armor[0] - (mainSkillDamage() * secondaryEffects());
                 Console.WriteLine("Hit points left: {0}", armor[0]);
             } while (armor[0] > 0);
             Console.WriteLine("Brute is defeated!");
