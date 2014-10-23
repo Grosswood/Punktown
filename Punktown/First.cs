@@ -466,6 +466,11 @@ namespace Punktown
                 damage = d(6) + d(6);
                 temporalStat[1] = temporalStat[1] - damage;
                 Console.WriteLine("BLow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
+                if (temporalStat[1] <= 0)
+                {
+                    Console.WriteLine("You have died!");
+                    Environment.Exit(0);
+                }
             }
             else
             {
