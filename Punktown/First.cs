@@ -12,11 +12,13 @@ namespace Punktown
         private static readonly object syncLock = new object();
         public static int mainSkill = 0;
         public static int secondarySkill = 0;
+        public static string enemyName = "void";
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+        public static int[] temporalStat = new int[5] { 50, 35, 0, 0, 0 }; // HPmax, HPcurr, XP, LVL, Bullets
         public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public static int[] encounterStatus = new int[5] { 10, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "Horrified"
+        public static int[] encounterStatus = new int[6] { 10, 0, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "Horrified", "Distracted"
 
         public static int d(int dice)
         {
@@ -77,15 +79,19 @@ namespace Punktown
             }
             if (encounterStatus[2] == 0)
             {
-                Console.WriteLine("He is not aware of your presence");
+                Console.WriteLine("{0} is not aware of your presence", enemyName);
             }
             if (encounterStatus[3] == 1)
             {
-                Console.WriteLine("You know his weak points");
+                Console.WriteLine("You know weak points of {0}", enemyName);
             }
             if (encounterStatus[4] == 1)
             {
-                Console.WriteLine("He is afraid of you");
+                Console.WriteLine("{0} is afraid of you", enemyName);
+            }
+            if (encounterStatus[5] == 1)
+            {
+                Console.WriteLine("{0} is distracted", enemyName);
             }
         }
 
@@ -188,7 +194,7 @@ namespace Punktown
             else
             {
                 int result = D(20);
-                if (skill[skillNumber] + inv[skillNumber] + result < armor[skillNumber])
+                if (skill[skillNumber] + inv[skillNumber] + result + (D(6) * encounterStatus[5]) < armor[skillNumber])
                 {
                     Console.WriteLine("{0} misses!", skillName[skillNumber]);
                     skillNumber = -skillNumber;
@@ -284,6 +290,14 @@ namespace Punktown
                     encounterStatus[0]--;
                 }
             }
+            if (encounterStatus[5] == -1)
+            {
+                encounterStatus[5] = 1;
+            }
+            else
+            {
+                encounterStatus[5] = 0;
+            }
         }
 
         static void noticeSkill ()
@@ -295,15 +309,15 @@ namespace Punktown
             }
             if (armor[skillNumber] < 8)
             {
-                Console.WriteLine("You have noticed that he is weak against {0}", skillName[skillNumber]);
+                Console.WriteLine("You have noticed that {1} is weak against {0}", skillName[skillNumber], enemyName);
             }
             else if (armor[skillNumber] < 13)
             {
-                Console.WriteLine("You have noticed that his protection is average against {0}", skillName[skillNumber]);
+                Console.WriteLine("You have noticed that {1} have average protection against {0}", skillName[skillNumber], enemyName);
             }
             else
             {
-                Console.WriteLine("You have noticed that he has strong protection versus {0}", skillName[skillNumber]);
+                Console.WriteLine("You have noticed that {1} have strong protection versus {0}", skillName[skillNumber], enemyName);
             }
         }
 
@@ -316,23 +330,23 @@ namespace Punktown
             else
             {
                 encounterStatus[3] = 1;
-                Console.WriteLine("You know his weak points. Critical strike unlocked!");
+                Console.WriteLine("You know weak points of {0}. Critical strike unlocked!", enemyName);
             }
         }
 
         static void speachSkill()
         {
-            Console.WriteLine("Please decide what you're going to tell to him ('1' to intimidate, '2' to distract)");
+            Console.WriteLine("Please decide what you're going to tell to {0} ('1' to intimidate, '2' to distract)", enemyName);
             int option = preciseInput(Console.ReadLine(), new int[] { 1, 2});
             if (option == 1)
             {
-                Console.WriteLine("He is now afraid of you and will surrender on low hp");
+                Console.WriteLine("{0} is now afraid of you and will surrender on low hp", enemyName);
                 encounterStatus[4] = 1;
             }
             else
             {
-                Console.WriteLine("He is distracted and takes additional damage");
-                armor[0] = armor[0] - D(6);
+                Console.WriteLine("{0} is distracted and his defences temporaly lowered for d6", enemyName);
+                encounterStatus[5] = -1;
             }
         }
 
@@ -422,7 +436,8 @@ namespace Punktown
 
         static void encounterBrute ()
         {
-            Console.WriteLine("Huge brute with aggressive intentions is approaching");
+            enemyName = "Huge brute";
+            Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
             armorInput(new int[11] { 50, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10 });
             resetEncounterStatus();
             do
@@ -436,6 +451,11 @@ namespace Punktown
                 statusUpdate();
                 Console.WriteLine("Hit points left: {0}", armor[0]);
             } while (armor[0] - (encounterStatus[4] * 20) > 0);
+            conclusion(5);
+        }
+
+        static void conclusion(int reward)
+        {
             if (armor[0] > 0)
             {
                 Console.WriteLine("Brute surrendered!");
@@ -443,6 +463,14 @@ namespace Punktown
             else
             {
                 Console.WriteLine("Brute is defeated!");
+            }
+            temporalStat[2] = temporalStat[2] + reward;
+            Console.WriteLine("You awarded with {0} XP!", reward);
+            if (d(100) < reward)
+            {
+                int skillNumber = d(10);
+                Console.WriteLine("You have found new tool for {0}!", skillName[skillNumber]);
+                inv[skillNumber]++;
             }
         }
 
