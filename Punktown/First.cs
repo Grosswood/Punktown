@@ -15,7 +15,7 @@ namespace Punktown
         public static string enemyName = "void";
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static int[] temporalStat = new int[5] { 50, 35, 0, 0, 0 }; // HPmax, HPcurr, XP, LVL, Bullets
+        public static int[] temporalStat = new int[5] { 50, 35, -100, 0, 0 }; // HPmax, HPcurr, XP, LVL, Bullets
         public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public static int[] encounterStatus = new int[6] { 10, 0, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "Horrified", "Distracted"
@@ -66,8 +66,9 @@ namespace Punktown
             int skillNumber = 0;
             for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
             {
-                Console.WriteLine("Input {2} to use {0}. His value is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
+                Console.WriteLine("Input {2} for {0}. His value is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
             }
+            Console.WriteLine("Your level is {4}. You have {0} hit points, out of {1}. XP to next level - {2}, armor is {3}", temporalStat[1], temporalStat[0], Math.Abs(temporalStat[2]), (10 + skill[5] + inv[4]), temporalStat[3] );
         }
 
         static void declareStatus()
@@ -194,7 +195,7 @@ namespace Punktown
             else
             {
                 int result = D(20);
-                if (skill[skillNumber] + inv[skillNumber] + result + (D(6) * encounterStatus[5]) < armor[skillNumber])
+                if (skill[skillNumber] + inv[skillNumber] + result + (d(6) * encounterStatus[5]) < armor[skillNumber])
                 {
                     Console.WriteLine("{0} misses!", skillName[skillNumber]);
                     skillNumber = -skillNumber;
@@ -442,6 +443,7 @@ namespace Punktown
             resetEncounterStatus();
             do
             {
+                enemyTurn(5);
                 declareStatus();
                 actionInput();
                 mainSkill = missOrHit(mainSkill);
@@ -451,7 +453,24 @@ namespace Punktown
                 statusUpdate();
                 Console.WriteLine("Hit points left: {0}", armor[0]);
             } while (armor[0] - (encounterStatus[4] * 20) > 0);
-            conclusion(5);
+            conclusion(105);
+        }
+
+        static void enemyTurn(int power)
+        {
+            int fullArmor = 10 + skill[5] + inv[4];
+            Console.WriteLine("{0} if fightning you!", enemyName);
+            int damage = D(20);
+            if (damage + power > fullArmor)
+            {
+                damage = d(6) + d(6);
+                temporalStat[1] = temporalStat[1] - damage;
+                Console.WriteLine("BLow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
+            }
+            else
+            {
+                Console.WriteLine("Miss!");
+            }
         }
 
         static void conclusion(int reward)
@@ -474,8 +493,27 @@ namespace Punktown
             }
         }
 
+        static void levelUp ()
+        {
+            if (temporalStat[2] >= 0)
+            {
+                temporalStat[3]++;
+                temporalStat[2] = temporalStat[2] - ((temporalStat[3] + 2) * (50));
+                Console.WriteLine("You have reached {0} level! Choose skill to improve (23 to remind options)", temporalStat[3]);
+                int skillToImprove = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
+                if (skillToImprove == 23)
+                {
+                    declareSkill();
+                    Console.WriteLine("Choose skill to improve");
+                    skillToImprove = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                }
+                skill[skillToImprove]++;
+            }
+        }
+
         static void whereTo ()
         {
+            levelUp();
             Console.WriteLine("What will you do now? (type 'help' for available options)");
             switch (Console.ReadLine())
             {
