@@ -379,7 +379,7 @@ namespace Punktown
                 Console.WriteLine("Fire from the cover! x2 damage!");
                 damageMultiplier = 2;
             }
-            if (mainSkill == 4 && secondarySkill == 5 && encounterStatus[1] == 1)
+            if (mainSkill == 4 && secondarySkill == 5 && encounterStatus[1] == 1 && encounterStatus[0] > 3 && encounterStatus[0] < 7)
             {
                 Console.WriteLine("Sinister charge! x4 damage!!!");
                 damageMultiplier = 4;
@@ -389,7 +389,7 @@ namespace Punktown
                 Console.WriteLine("Backstab! x3 damage!");
                 damageMultiplier = 3;
             }
-            else if (mainSkill == 4 && secondarySkill == 5)
+            else if (mainSkill == 4 && secondarySkill == 5 && encounterStatus[0] > 3 && encounterStatus[0] < 7)
             {
                 Console.WriteLine("Charge! x2 damage!");
                 damageMultiplier = 2;
