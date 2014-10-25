@@ -15,8 +15,9 @@ namespace Punktown
         public static string enemyName = "void";
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static int[] temporalStat = new int[5] { 50, 35, -100, 0, 0 }; // HPmax, HPcurr, XP, LVL, Bullets
+        public static int[] temporalStat = new int[5] { 50, 35, -100, 0, 0 }; // HPmax, HPcurr, XP, LVL, Credits
         public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
+        public static string[] toolName = new string[11] { "Armor", "version for hacking worm", "laser gun", "lockpick set", "sledgehammer", "sneakers", "electronic notepad", "magnifying lens", "voice amplifier", "camouflage cloak", "compass" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         public static int[] encounterStatus = new int[6] { 10, 0, 0, 0, 0, 0 }; //"Range", "Hiddenness", "Awareness", "Familiarity", "Horrified", "Distracted"
 
@@ -361,6 +362,11 @@ namespace Punktown
                 Console.WriteLine("Enter main action");
                 mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             }
+            if ((mainSkill == 1 || mainSkill == 3 || mainSkill == 4) && encounterStatus[0] > 3)
+            {
+                Console.WriteLine("You need to be in close range (3 or less) to use Hacking, Lockpick or Melee. Please choose different skill");
+                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            }
             Console.WriteLine("Choose secondary action (It is always secondary skill)");
             secondarySkill = preciseInput(Console.ReadLine(), new int[] { 5, 6, 7, 8, 9, 10 });
         }
@@ -443,7 +449,10 @@ namespace Punktown
             resetEncounterStatus();
             do
             {
-                enemyTurn(5);
+                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
+                {
+                    enemyTurn(5);
+                }
                 declareStatus();
                 actionInput();
                 mainSkill = missOrHit(mainSkill);
@@ -451,7 +460,7 @@ namespace Punktown
                 secondaryEffects();
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
-                Console.WriteLine("Hit points left: {0}", armor[0]);
+                Console.WriteLine("{1} have {0} hit points left", armor[0], enemyName);
             } while (armor[0] - (encounterStatus[4] * 20) > 0);
             conclusion(105);
         }
@@ -465,7 +474,7 @@ namespace Punktown
             {
                 damage = d(6) + d(6);
                 temporalStat[1] = temporalStat[1] - damage;
-                Console.WriteLine("BLow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
+                Console.WriteLine("Blow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
                 if (temporalStat[1] <= 0)
                 {
                     Console.WriteLine("You have died!");
@@ -488,12 +497,20 @@ namespace Punktown
             {
                 Console.WriteLine("Brute is defeated!");
             }
+            int skillNumber = 0;
+            int money = 0;
+            for (skillNumber = 0; skillNumber < reward; skillNumber++)
+            {
+                money = money + d(3);
+            }
+            temporalStat[4] = temporalStat[4] + money;
             temporalStat[2] = temporalStat[2] + reward;
+            Console.WriteLine("You have found {0} credits", money);
             Console.WriteLine("You awarded with {0} XP!", reward);
             if (d(100) < reward)
             {
-                int skillNumber = d(10);
-                Console.WriteLine("You have found new tool for {0}!", skillName[skillNumber]);
+                skillNumber = d(10);
+                Console.WriteLine("You have found new {0}!", toolName[skillNumber]);
                 inv[skillNumber]++;
             }
         }
