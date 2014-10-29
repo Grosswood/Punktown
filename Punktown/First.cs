@@ -176,10 +176,14 @@ namespace Punktown
         {
             Random random = new Random();
             int location = random.Next(0, 1000);
-            location = 5;
+            location = 15;
             if (location < 10)
             {
                 encounterBrute();
+            }
+            else if (location < 20)
+            {
+                encounterJunky();
             }
             else
             {
@@ -493,7 +497,7 @@ namespace Punktown
         {
             enemyName = "Huge brute";
             Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
-            armorInput(new int[11] { 50, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10 });
+            armorInput(new int[11] { 50, 100, 8, 100, 9, 7, 8, 9, 6, 8, 7 });
             resetEncounterStatus();
             if (runOrFight() == 1)
             {
@@ -503,7 +507,7 @@ namespace Punktown
             {
                 if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
                 {
-                    enemyTurn(5);
+                    enemyTurn(3);
                 }
                 declareStatus();
                 actionInput();
@@ -516,7 +520,38 @@ namespace Punktown
             } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
             if (encounterStatus[0] < 90)
             {
-                conclusion(105);
+                conclusion(20);
+            }
+        }
+
+        static void encounterJunky()
+        {
+            enemyName = "Weak junky";
+            Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
+            armorInput(new int[11] { 30, 100, 6, 100, 8, 6, 7, 9, 5, 6, 7 });
+            resetEncounterStatus();
+            if (runOrFight() == 1)
+            {
+                return;
+            }
+            do
+            {
+                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
+                {
+                    enemyTurn(1);
+                }
+                declareStatus();
+                actionInput();
+                mainSkill = missOrHit(mainSkill);
+                secondarySkill = missOrHit(secondarySkill);
+                secondaryEffects();
+                armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
+                statusUpdate();
+                Console.WriteLine("{1} have {0} hit points left", armor[0], enemyName);
+            } while ((armor[0] - (encounterStatus[4] * 15) > 0) && (encounterStatus[0] < 90));
+            if (encounterStatus[0] < 90)
+            {
+                conclusion(8);
             }
         }
 
@@ -524,10 +559,14 @@ namespace Punktown
         {
             int fullArmor = 10 + skill[5] + inv[4];
             Console.WriteLine("{0} if fightning you!", enemyName);
-            int damage = D(20);
-            if (damage + power > fullArmor)
+            int iterationNumber = D(20);
+            if (iterationNumber + (power * 2) > fullArmor)
             {
-                damage = d(6) + d(6);
+                int damage = 0;
+                for (iterationNumber = 0; iterationNumber < power; iterationNumber++)
+                {
+                    damage = damage + d(6);
+                }
                 temporalStat[1] = temporalStat[1] - damage;
                 Console.WriteLine("Blow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
                 if (temporalStat[1] <= 0)
@@ -546,17 +585,17 @@ namespace Punktown
         {
             if (armor[0] > 0)
             {
-                Console.WriteLine("Brute surrendered!");
+                Console.WriteLine("{0} surrendered!", enemyName);
             }
             else
             {
-                Console.WriteLine("Brute is defeated!");
+                Console.WriteLine("{0} is defeated!", enemyName);
             }
             int skillNumber = 0;
             int money = 0;
             for (skillNumber = 0; skillNumber < reward; skillNumber++)
             {
-                money = money + d(3);
+                money = money + d(3) - 1;
             }
             temporalStat[4] = temporalStat[4] + money;
             temporalStat[2] = temporalStat[2] + reward;
