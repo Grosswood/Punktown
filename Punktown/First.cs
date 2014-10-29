@@ -48,9 +48,10 @@ namespace Punktown
             return number;
         }
 
-        public static int preciseInput(string input, int [] desiredValues)
+        public static int preciseInput(int [] desiredValues)
         {
             int number = 0;
+            string input = Console.ReadLine();
             int.TryParse(input, out number);
             int place = Array.IndexOf(desiredValues, number);
             while (place == -1)
@@ -132,14 +133,14 @@ namespace Punktown
             Console.WriteLine("Choose action to perform:");
             Console.WriteLine("1 - Let's try polite way: press some buttons and try to remember how this thing works");
             Console.WriteLine("2 - Puny buttons is for weaklings! Try to kick your way out. This thing has to have her durability limited");
-            int action = preciseInput(Console.ReadLine(), new int[] { 1, 2 });
+            int action = preciseInput(new int[] { 1, 2 });
             if (action == 1)
             {
                 Console.WriteLine("[Your hacking skill increased!]");
                 Console.WriteLine("'Hey, wait! I do remember how it is works, but... why? What is this thing anyway? Ok, I think it's better to find an answer outside of this high-tech coffin.");
                 Console.WriteLine("You have pressed some buttons and locks on door started to unlock. Most of them but one moved away. It seems jammed");
                 Console.WriteLine("Should you put some strength in it (1) or look for something to pick lock (2)?");
-                action = preciseInput(Console.ReadLine(), new int[] { 1, 2 });
+                action = preciseInput(new int[] { 1, 2 });
                 if (action == 1)
                 {
                     Console.WriteLine("[Your melee skill increased!]");
@@ -157,7 +158,7 @@ namespace Punktown
                 Console.WriteLine("'AAAhhhh tiny useless buttons! Who need them anyway?!'");
                 Console.WriteLine("Lock won't succumb");
                 Console.WriteLine("Should you put more fore it (1) or try to find a weak spot in door (2)?");
-                action = preciseInput(Console.ReadLine(), new int[] { 1, 2 });
+                action = preciseInput(new int[] { 1, 2 });
                 if (action == 1)
                 {
                     Console.WriteLine("[Your melee skill increased!]");
@@ -204,7 +205,7 @@ namespace Punktown
                 else
                 {
                     Console.WriteLine("{0} hits!", skillName[skillNumber]);
-                    if (result > 8 && skillNumber < 5 && encounterStatus[3] == 1)
+                    if (result > 18 && skillNumber < 5 && encounterStatus[3] == 1)
                     {
                         encounterStatus[3] = 2;
                     }
@@ -339,7 +340,7 @@ namespace Punktown
         static void speachSkill()
         {
             Console.WriteLine("Please decide what you're going to tell to {0} ('1' to intimidate, '2' to distract)", enemyName);
-            int option = preciseInput(Console.ReadLine(), new int[] { 1, 2});
+            int option = preciseInput(new int[] { 1, 2});
             if (option == 1)
             {
                 Console.WriteLine("{0} is now afraid of you and will surrender on low hp", enemyName);
@@ -355,20 +356,20 @@ namespace Punktown
         static void actionInput()
         {
             Console.WriteLine("Choose main skill in action (It could main or secondary skill, '23' to remind options)");
-            mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
+            mainSkill = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
             if (mainSkill == 23)
             {
                 declareSkill();
                 Console.WriteLine("Enter main action");
-                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                mainSkill = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             }
             if ((mainSkill == 1 || mainSkill == 3 || mainSkill == 4) && encounterStatus[0] > 3)
             {
                 Console.WriteLine("You need to be in close range (3 or less) to use Hacking, Lockpick or Melee. Please choose different skill");
-                mainSkill = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                mainSkill = preciseInput(new int[] { 2, 5, 6, 7, 8, 9, 10 });
             }
             Console.WriteLine("Choose secondary action (It is always secondary skill)");
-            secondarySkill = preciseInput(Console.ReadLine(), new int[] { 5, 6, 7, 8, 9, 10 });
+            secondarySkill = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
         }
         
         static int damageMultiplier()
@@ -439,6 +440,53 @@ namespace Punktown
             {
                 encounterStatus[1] = 1;
             }
+            if (mainSkill == 10)
+            {
+                streetWiseSkill();
+            }
+            if (secondarySkill == 10)
+            {
+                streetWiseSkill();
+            }
+        }
+
+        static void streetWiseSkill()
+        {
+            if (encounterStatus[0] < 19)
+            {
+                Console.WriteLine("You not far enough to get away from {0}", enemyName);
+            }
+            else
+            {
+                Console.WriteLine("Your tactical retreat is succesful");
+                encounterStatus[0] = 100;
+            }
+        }
+
+        static int runOrFight()
+        {
+            Console.WriteLine("Do you want to fight (1) or you want to retreat tactically? (0)");
+            int decision = preciseInput(new int[] { 0, 1 });
+            if (decision == 1)
+            {
+                Console.WriteLine("Good luck!");
+                return 0;
+            }
+            else
+            {
+                decision = missOrHit(10);
+                if (decision > 0)
+                {
+                    Console.WriteLine("Your retreat is succesful");
+                    return 1;
+                }
+                else
+                {
+                    Console.WriteLine("You're not fast enough that time, you have to fight");
+                    return 0;
+                }
+            }
+
         }
 
         static void encounterBrute ()
@@ -447,6 +495,10 @@ namespace Punktown
             Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
             armorInput(new int[11] { 50, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10 });
             resetEncounterStatus();
+            if (runOrFight() == 1)
+            {
+                return;
+            }
             do
             {
                 if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
@@ -461,8 +513,11 @@ namespace Punktown
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
                 Console.WriteLine("{1} have {0} hit points left", armor[0], enemyName);
-            } while (armor[0] - (encounterStatus[4] * 20) > 0);
-            conclusion(105);
+            } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
+            if (encounterStatus[0] < 90)
+            {
+                conclusion(105);
+            }
         }
 
         static void enemyTurn(int power)
@@ -522,12 +577,12 @@ namespace Punktown
                 temporalStat[3]++;
                 temporalStat[2] = temporalStat[2] - ((temporalStat[3] + 2) * (50));
                 Console.WriteLine("You have reached {0} level! Choose skill to improve (23 to remind options)", temporalStat[3]);
-                int skillToImprove = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
+                int skillToImprove = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
                 if (skillToImprove == 23)
                 {
                     declareSkill();
                     Console.WriteLine("Choose skill to improve");
-                    skillToImprove = preciseInput(Console.ReadLine(), new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                    skillToImprove = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
                 }
                 skill[skillToImprove]++;
             }
