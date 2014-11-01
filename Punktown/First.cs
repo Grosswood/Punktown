@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -208,7 +208,7 @@ namespace Punktown
             {
                 encounterStatus[1] = stealthBreakCheck();
             }
-            if (encounterStatus[2] == 0 && (Math.Abs(mainSkill) == 2 || Math.Abs(mainSkill) == 4 || Math.Abs(secondarySkill) == 5 || Math.Abs(secondarySkill) == 8))
+            if (encounterStatus[2] == 0 && (Math.Abs(mainSkill) == 2 || Math.Abs(mainSkill) == 4 || Math.Abs(secondarySkill) == 5 || Math.Abs(secondarySkill) == 8 || Math.Abs(mainSkill) == 5 || Math.Abs(mainSkill) == 8))
             {
                 encounterStatus[2] = 1;
                 Console.WriteLine("He is now aware of you!");
@@ -569,7 +569,9 @@ namespace Punktown
                     whereTo();
                     break;
                 case ("2"):
-                    Console.WriteLine("'Huckster' is correct way to exit from game for now");
+                    Console.WriteLine("Black market have everything you need!");
+                    huckster();
+                    whereTo();
                     break;
                 case ("3"):
                     Console.WriteLine("Good bye!");
@@ -579,6 +581,61 @@ namespace Punktown
                     whereTo();
                     break;
             }
+        }
+
+        static void huckster()
+        {
+            Console.WriteLine("You have {0} credits", temporalStat[4]);
+            Console.WriteLine("Input '1' to buy first aid kit (20 HP/ 10 credits), '2' to upgrade your gear, '3' to exit");
+            int whatToBuy = preciseInput(new int[] {1, 2, 3 });
+            if (whatToBuy == 1)
+            {
+                if (temporalStat[1] == temporalStat[0])
+                {
+                    Console.WriteLine("You are completely healthy, no need for first aid kits");
+                    huckster();
+                }
+                else if (temporalStat[4] < 10)
+                {
+                    Console.WriteLine("You don't have enough money!");
+                    huckster();
+                }
+                else
+                {
+                    temporalStat[4] = temporalStat[4] - 10;
+                    temporalStat[1] = temporalStat[1] + 20;
+                    if (temporalStat[1] > temporalStat[0])
+                    {
+                        temporalStat[1] = temporalStat[0];
+                    }
+                    Console.WriteLine("You now have {0} HP", temporalStat[1]);
+                    huckster();
+                }
+            }
+            if (whatToBuy == 2)
+            {
+                for (whatToBuy = 1; whatToBuy < 11; whatToBuy++)
+                {
+                    Console.WriteLine("'{0}' to upgrade {1}({2}) to {3} for {4} credits", whatToBuy, toolName[whatToBuy], skillName[whatToBuy], (inv[whatToBuy]+1), ((inv[whatToBuy]+1)*10) );
+                }
+                whatToBuy = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                if (temporalStat[4] < ((inv[whatToBuy] + 1) * 10) )
+                {
+                    Console.WriteLine("You don't have enough money!");
+                }
+                else
+                {
+                    temporalStat[4] = temporalStat[4] - ((inv[whatToBuy] + 1) * 10);
+                    inv[whatToBuy] = inv[whatToBuy] + 1;
+                    Console.WriteLine("Your {0} quality now is {1}", toolName[whatToBuy], inv[whatToBuy]);
+                }
+                huckster();
+            }
+            if (whatToBuy == 3)
+            {
+                Console.WriteLine("See you soon!");
+            }
+
         }
 
         static void firstChapter()
