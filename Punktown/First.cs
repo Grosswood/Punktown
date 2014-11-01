@@ -68,7 +68,7 @@ namespace Punktown
             int skillNumber = 0;
             for (skillNumber = 1; skillNumber < skillName.Length; skillNumber++)
             {
-                Console.WriteLine("Input {2} for {0}. His value is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
+                Console.WriteLine("Input {2} for {0}. Its value is {1}, tool quality is {3}", skillName[skillNumber], skill[skillNumber], skillNumber, inv[skillNumber]);
             }
             Console.WriteLine("Your level is {4}. You have {0} hit points, out of {1}. XP to next level - {2}, armor is {3}", temporalStat[1], temporalStat[0], Math.Abs(temporalStat[2]), (10 + skill[5] + inv[4]), temporalStat[3] );
         }
@@ -111,7 +111,7 @@ namespace Punktown
             }
             else
             {
-                Console.WriteLine("Hey, I've been here! Probably gave a circle or something.");
+                Console.WriteLine("Hey, I've been here! Probably made a circle or something.");
             }
         }
 
@@ -244,11 +244,11 @@ namespace Punktown
             }
             else if (armor[skillNumber] < 13)
             {
-                Console.WriteLine("You have noticed that {1} have average protection against {0}", skillName[skillNumber], enemyName);
+                Console.WriteLine("You have noticed that {1} has average protection against {0}", skillName[skillNumber], enemyName);
             }
             else
             {
-                Console.WriteLine("You have noticed that {1} have strong protection versus {0}", skillName[skillNumber], enemyName);
+                Console.WriteLine("You have noticed that {1} has strong protection versus {0}", skillName[skillNumber], enemyName);
             }
         }
 
@@ -271,19 +271,19 @@ namespace Punktown
             int option = preciseInput(new int[] { 1, 2});
             if (option == 1)
             {
-                Console.WriteLine("{0} is now afraid of you and will surrender on low hp", enemyName);
+                Console.WriteLine("{0} is now afraid of you and will surrender on low HP", enemyName);
                 encounterStatus[4] = 1;
             }
             else
             {
-                Console.WriteLine("{0} is distracted and his defences temporaly lowered for d6", enemyName);
+                Console.WriteLine("{0} is distracted and his defences are temporaly lowered for d6", enemyName);
                 encounterStatus[5] = -1;
             }
         }
 
         static void actionInput()
         {
-            Console.WriteLine("Choose main skill in action (It could main or secondary skill, '23' to remind options)");
+            Console.WriteLine("Choose main skill in action (It could be main or secondary skill, '23' to remind options)");
             mainSkill = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
             if (mainSkill == 23)
             {
@@ -393,7 +393,7 @@ namespace Punktown
 
         static int runOrFight()
         {
-            Console.WriteLine("Do you want to fight (1) or you want to retreat tactically? (0)");
+            Console.WriteLine("Do you want to fight (1) or to retreat tactically? (0)");
             int decision = preciseInput(new int[] { 0, 1 });
             if (decision == 1)
             {
@@ -410,7 +410,7 @@ namespace Punktown
                 }
                 else
                 {
-                    Console.WriteLine("You're not fast enough that time, you have to fight");
+                    Console.WriteLine("You're not fast enough this time, you have to fight");
                     return 0;
                 }
             }
@@ -420,7 +420,7 @@ namespace Punktown
         static void encounterBrute ()
         {
             enemyName = "Huge brute";
-            Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
+            Console.WriteLine("{0} is approaching with aggressive intentions", enemyName);
             armorInput(new int[11] { 50, 100, 8, 100, 9, 7, 8, 9, 6, 8, 7 });
             resetEncounterStatus();
             if (runOrFight() == 1)
@@ -440,7 +440,7 @@ namespace Punktown
                 secondaryEffects();
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
-                Console.WriteLine("{1} have {0} hit points left", armor[0], enemyName);
+                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
             } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
             if (encounterStatus[0] < 90)
             {
@@ -451,7 +451,7 @@ namespace Punktown
         static void encounterJunky()
         {
             enemyName = "Weak junky";
-            Console.WriteLine("{0} with aggressive intentions is approaching", enemyName);
+            Console.WriteLine("{0} is approaching with aggressive intentions", enemyName);
             armorInput(new int[11] { 30, 100, 6, 100, 8, 6, 7, 9, 5, 6, 7 });
             resetEncounterStatus();
             if (runOrFight() == 1)
@@ -471,7 +471,7 @@ namespace Punktown
                 secondaryEffects();
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
-                Console.WriteLine("{1} have {0} hit points left", armor[0], enemyName);
+                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
             } while ((armor[0] - (encounterStatus[4] * 15) > 0) && (encounterStatus[0] < 90));
             if (encounterStatus[0] < 90)
             {
@@ -482,7 +482,7 @@ namespace Punktown
         static void enemyTurn(int power)
         {
             int fullArmor = 10 + skill[5] + inv[4];
-            Console.WriteLine("{0} if fightning you!", enemyName);
+            Console.WriteLine("{0} is fightning you!", enemyName);
             int iterationNumber = D(20);
             if (iterationNumber + (power * 2) > fullArmor)
             {
@@ -492,7 +492,7 @@ namespace Punktown
                     damage = damage + d(6);
                 }
                 temporalStat[1] = temporalStat[1] - damage;
-                Console.WriteLine("Blow hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
+                Console.WriteLine("Strike hits your for {0}, you have {1} HP left", damage, temporalStat[1]);
                 if (temporalStat[1] <= 0)
                 {
                     Console.WriteLine("You have died!");
@@ -524,7 +524,7 @@ namespace Punktown
             temporalStat[4] = temporalStat[4] + money;
             temporalStat[2] = temporalStat[2] + reward;
             Console.WriteLine("You have found {0} credits", money);
-            Console.WriteLine("You awarded with {0} XP!", reward);
+            Console.WriteLine("You are awarded with {0} XP!", reward);
             if (d(100) < reward)
             {
                 skillNumber = d(10);
