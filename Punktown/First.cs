@@ -48,10 +48,38 @@ namespace Punktown
             return number;
         }
 
+        public static void help()
+        {
+            Console.WriteLine("You are in 'help' section. Input '1' for skills description, '2' for credits, '3' to exit");
+            int help = preciseInput(new int[] {1, 2});
+            if (help == 1)
+            {
+                Console.WriteLine("Hacking (main) is used against any kinds of turrets, cybernetic life-forms or when comfronting computer controlled systems. It is main source of damage in such battles");
+                Console.WriteLine("Ranged (main) is way to inflict physical damage while maintaining distance. In most cases it lets you avoid damage from melee opponent, but in close range Melee (main) can be more effective");
+                Console.WriteLine("Lockpick (main) is required to open both mechanical and electronics locks");
+                Console.WriteLine("Melee (main) - ability to deal damage at close distance");
+                Console.WriteLine("Athletics (secondary) required to get away from someone or conversevly approach. Also passively increasing armor");
+                Console.WriteLine("Knowledge (secondary) can help charecter to remember vital spots of his tasrget to unlock critical strikes");
+                Console.WriteLine("Notice (secondary) can be used to determine level of defence against random skill");
+                Console.WriteLine("Speech (secondary) have several ways to use. You can intimidate target and force it surrender on low HP, or you can distract to make you next move more successful");
+                Console.WriteLine("Stealth (secondary) can be used to avoid battles. Also damage when breaking stealth is immensely increased");
+                Console.WriteLine("Streetwise (secondary) lets you avoid the battle both at the beginning, before opponent haven't noticed you, or after beginning when you reached certain distance");
+            }
+            if (help == 2)
+            {
+                Console.WriteLine("Thank you for participation in testing! Please contact me for more information, my email is 'mozge4ok@gmail.com'");
+            }
+
+        }
+
         public static int preciseInput(int [] desiredValues)
         {
-            int number = 0;
             string input = Console.ReadLine();
+            if (input == "help")
+            {
+                help();
+            }
+            int number = 0;
             int.TryParse(input, out number);
             int place = Array.IndexOf(desiredValues, number);
             while (place == -1)
@@ -281,6 +309,50 @@ namespace Punktown
             }
         }
 
+        static void athleticsSkill(int multiplier)
+        {
+            Console.WriteLine("Are you running away (1) or closing in (2)?");
+            int moreOrLess = preciseInput(new int[] { 1, 2 });
+            if (moreOrLess == 1)
+            {
+                encounterStatus[0] = encounterStatus[0] + (1 * multiplier);
+                if (multiplier == 2)
+                {
+                    if (mainSkill == 5)
+                    {
+                        encounterStatus[0]++;
+                    }
+                    if (secondarySkill == 5)
+                    {
+                        encounterStatus[0]++;
+                    }
+                }
+                else if ((mainSkill == 5) || (secondarySkill == 5))
+                {
+                    encounterStatus[0] = encounterStatus[0] + (1 * multiplier);
+                }
+            }
+            if (moreOrLess == 2 && encounterStatus[0] >= (2 * multiplier))
+            {
+                encounterStatus[0] = encounterStatus[0] - (1 * multiplier);
+                if (multiplier == 2)
+                {
+                    if (mainSkill == 5)
+                    {
+                        encounterStatus[0]--;
+                    }
+                    if (secondarySkill == 5)
+                    {
+                        encounterStatus[0]--;
+                    }
+                }
+                else if ((mainSkill == 5) || (secondarySkill == 5))
+                {
+                    encounterStatus[0] = encounterStatus[0] - (1 * multiplier);
+                }
+            }
+        }
+
         static void actionInput()
         {
             Console.WriteLine("Choose main skill in action (It could be main or secondary skill, '23' to remind options)");
@@ -328,14 +400,6 @@ namespace Punktown
         
         static void secondaryEffects()
         {
-            if (mainSkill == 5)
-            {
-                encounterStatus[0] = encounterStatus[0] + 2;
-            }
-            if (secondarySkill == 5)
-            {
-                encounterStatus[0] = encounterStatus[0] + 2;
-            }
             if (mainSkill == 6)
             {
                 knowledgeSkill();
@@ -375,6 +439,21 @@ namespace Punktown
             if (secondarySkill == 10)
             {
                 streetWiseSkill();
+            }
+            if ((Math.Abs(mainSkill) == 5) && (Math.Abs(secondarySkill) == 5))
+            {
+                athleticsSkill(2);
+            }
+            else
+            {
+                if (Math.Abs(mainSkill) == 5)
+                {
+                    athleticsSkill(1);
+                }
+                if (Math.Abs(secondarySkill) == 5)
+                {
+                    athleticsSkill(1);
+                }
             }
         }
 
