@@ -617,16 +617,30 @@ namespace Punktown
             if (temporalStat[2] >= 0)
             {
                 temporalStat[3]++;
+                temporalStat[0] = temporalStat[0] + 5;
+                temporalStat[1] = temporalStat[1] + 5;
                 temporalStat[2] = temporalStat[2] - ((temporalStat[3] + 2) * (50));
-                Console.WriteLine("You have reached {0} level! Choose skill to improve (23 to remind options)", temporalStat[3]);
-                int skillToImprove = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23 });
+                Console.WriteLine("You have reached {0} level! You gain 5 additional HP");
+                Console.WriteLine("Choose main skill to improve (23 to remind options)", temporalStat[3]);
+                int skillToImprove = preciseInput(new int[] { 1, 2, 3, 4, 23 });
                 if (skillToImprove == 23)
                 {
                     declareSkill();
                     Console.WriteLine("Choose skill to improve");
-                    skillToImprove = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                    skillToImprove = preciseInput(new int[] { 1, 2, 3, 4 });
                 }
                 skill[skillToImprove]++;
+                Console.WriteLine("Your {0} now is {1}", skillName[skillToImprove], skill[skillToImprove]);
+                Console.WriteLine("Choose secondary skill to improve (23 to remind options)", temporalStat[3]);
+                skillToImprove = preciseInput(new int[] { 5, 6, 7, 8, 9, 10, 23 });
+                if (skillToImprove == 23)
+                {
+                    declareSkill();
+                    Console.WriteLine("Choose skill to improve");
+                    skillToImprove = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
+                }
+                skill[skillToImprove]++;
+                Console.WriteLine("Your {0} now is {1}", skillName[skillToImprove], skill[skillToImprove]);
             }
         }
 
