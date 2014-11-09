@@ -597,6 +597,10 @@ namespace Punktown
             if (temporalStat[2] >= 0)
             {
                 temporalStat[3]++;
+                if (temporalStat[3] == 5)
+                {
+                    endOfAlpha();
+                }
                 temporalStat[0] = temporalStat[0] + 5;
                 temporalStat[1] = temporalStat[1] + 5;
                 temporalStat[2] = temporalStat[2] - ((temporalStat[3] + 2) * (50));
@@ -714,6 +718,15 @@ namespace Punktown
         static void firstChapter()
         {
             whereTo();
+        }
+
+        static void endOfAlpha()
+        {
+            Console.WriteLine("You have succesfully reached level 5. That is the end of alpha-version");
+            Console.WriteLine("I hope you liked the game. Your feedback would be highly appriciated");
+            Console.WriteLine("Please contact me via email 'mozge4ok@gmail.com'");
+            Console.WriteLine("Stay tuned for coming beta-version! :)");
+            Environment.Exit(0);
         }
 
         static void Main(string[] args)
