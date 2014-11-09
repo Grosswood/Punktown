@@ -128,14 +128,14 @@ namespace Punktown
 
         static void wonder ()
         {
-            int location = d(10);
+            int location = d(3);
             if (location == 1)
             {
-                encounterBrute();
+                encounterBrute(d(3));
             }
             else if (location == 2)
             {
-                encounterJunky();
+                //encounterJunky();
             }
             else
             {
@@ -186,7 +186,7 @@ namespace Punktown
             {
                 encounterStatus[encounterStatus[0]] = 0;
             }
-            encounterStatus[0] = 10;
+            encounterStatus[0] = 2;
         }
 
         static int stealthBreakCheck()
@@ -261,22 +261,23 @@ namespace Punktown
 
         static void noticeSkill ()
         {
-            int skillNumber = d(10);
+            int skillNumber = d(4);
             if (armor[skillNumber] == 100)
             {
                 Console.WriteLine("You have noticed that {0} is useless here", skillName[skillNumber]);
             }
-            if (armor[skillNumber] < 8)
+            else
             {
-                Console.WriteLine("You have noticed that {1} is weak against {0}", skillName[skillNumber], enemyName);
+                Console.WriteLine("{0} have armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
             }
-            else if (armor[skillNumber] < 13)
+            skillNumber = d(6) + 4;
+            if (armor[skillNumber] == 100)
             {
-                Console.WriteLine("You have noticed that {1} has average protection against {0}", skillName[skillNumber], enemyName);
+                Console.WriteLine("You have noticed that {0} is useless here", skillName[skillNumber]);
             }
             else
             {
-                Console.WriteLine("You have noticed that {1} has strong protection versus {0}", skillName[skillNumber], enemyName);
+                Console.WriteLine("{0} have armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
             }
         }
 
@@ -472,6 +473,15 @@ namespace Punktown
 
         static int runOrFight()
         {
+            int result = skill[7] + inv[7] + D(20);
+            if (result < armor[7])
+            {
+                Console.WriteLine("You have noticed him late! You have to fight!");
+                encounterStatus[2] = 1;
+                return 0;
+            }
+            encounterStatus[0] = result - armor[7] + 2;
+            Console.WriteLine("{0} is {1} meters away", enemyName, encounterStatus[0]);
             Console.WriteLine("Do you want to fight (1) or to retreat tactically? (0)");
             int decision = preciseInput(new int[] { 0, 1 });
             if (decision == 1)
@@ -496,11 +506,11 @@ namespace Punktown
 
         }
 
-        static void encounterBrute ()
+        static void encounterBrute (int level)
         {
             enemyName = "Huge brute";
-            Console.WriteLine("{0} is approaching with aggressive intentions", enemyName);
-            armorInput(new int[11] { 50, 100, 8, 100, 9, 7, 8, 9, 6, 8, 7 });
+            Console.WriteLine("{0} (lvl {1}) is approaching with aggressive intentions", enemyName, level);
+            armorInput(new int[11] { 50, 100, (8 + level), 100, (9 + level), (7 + level), (8 + level), (6 + level), (6 + level), (8 + level), (7 + level) });
             resetEncounterStatus();
             if (runOrFight() == 1)
             {
@@ -510,7 +520,7 @@ namespace Punktown
             {
                 if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
                 {
-                    enemyTurn(3);
+                    enemyTurn(3 + level);
                 }
                 declareStatus();
                 actionInput();
@@ -526,42 +536,12 @@ namespace Punktown
                 conclusion(20);
             }
         }
-
-        static void encounterJunky()
-        {
-            enemyName = "Weak junky";
-            Console.WriteLine("{0} is approaching with aggressive intentions", enemyName);
-            armorInput(new int[11] { 30, 100, 6, 100, 8, 6, 7, 9, 5, 6, 7 });
-            resetEncounterStatus();
-            if (runOrFight() == 1)
-            {
-                return;
-            }
-            do
-            {
-                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
-                {
-                    enemyTurn(1);
-                }
-                declareStatus();
-                actionInput();
-                mainSkill = missOrHit(mainSkill);
-                secondarySkill = missOrHit(secondarySkill);
-                secondaryEffects();
-                armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
-                statusUpdate();
-                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
-            } while ((armor[0] - (encounterStatus[4] * 15) > 0) && (encounterStatus[0] < 90));
-            if (encounterStatus[0] < 90)
-            {
-                conclusion(8);
-            }
-        }
-
+        
         static void enemyTurn(int power)
         {
             int fullArmor = 10 + skill[5] + inv[4];
             Console.WriteLine("{0} is fightning you!", enemyName);
+            //one variable instead of two
             int iterationNumber = D(20);
             if (iterationNumber + (power * 2) > fullArmor)
             {
