@@ -15,7 +15,7 @@ namespace Punktown
         public static string enemyName = "void";
         public static int[] skill = new int[11] { 100, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         public static int[] inv = new int[11] { 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
-        public static int[] temporalStat = new int[5] { 50, 35, -100, 0, 0 }; // HPmax, HPcurr, XP, LVL, Credits
+        public static int[] temporalStat = new int[5] { 100, 85, -100, 0, 0 }; // HPmax, HPcurr, XP, LVL, Credits
         public static string[] skillName = new string[11] { "Hit points", "Hacking (main)", "Ranged (main)", "Lockpick (main)", "Melee (main)", "Athletics (secondary)", "Knowledge (secondary)", "Notice (secondary)", "Speech (secondary)", "Stealth (secondary)", "Streetwise (secondary)" };
         public static string[] toolName = new string[11] { "Armor", "version for hacking worm", "laser gun", "lockpick set", "sledgehammer", "sneakers", "electronic notepad", "magnifying lens", "voice amplifier", "camouflage cloak", "compass" };
         public static int[] armor = new int[11] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -128,18 +128,24 @@ namespace Punktown
 
         static void wonder ()
         {
-            int location = d(3);
-            if (location == 1)
+            int location = d(10);
+            switch (location)
             {
-                encounterBrute(d(3));
-            }
-            else if (location == 2)
-            {
-                //encounterJunky();
-            }
-            else
-            {
-                Console.WriteLine("Hey, I've been here! Probably made a circle or something.");
+                case (1):
+                    encounterBrute(d(3));
+                    break;
+                case (2):
+                    encounterMadScientist(d(3));
+                    break;
+                case (3):
+
+                    break;
+                case (4):
+
+                    break;
+                default:
+                    Console.WriteLine("Hey, I've been here! Probably made a circle or something.");
+                    break;
             }
         }
 
@@ -481,7 +487,7 @@ namespace Punktown
                 return 0;
             }
             encounterStatus[0] = result - armor[7] + 2;
-            Console.WriteLine("{0} is {1} meters away", enemyName, encounterStatus[0]);
+            Console.WriteLine("{0} is {1} meters away, he haven't noticed you yet", enemyName, encounterStatus[0]);
             Console.WriteLine("Do you want to fight (1) or to retreat tactically? (0)");
             int decision = preciseInput(new int[] { 0, 1 });
             if (decision == 1)
@@ -510,7 +516,7 @@ namespace Punktown
         {
             enemyName = "Huge brute";
             Console.WriteLine("{0} (lvl {1}) is approaching with aggressive intentions", enemyName, level);
-            armorInput(new int[11] { 50, 100, (8 + level), 100, (9 + level), (7 + level), (8 + level), (6 + level), (6 + level), (8 + level), (7 + level) });
+            armorInput(new int[11] { 50, 100, (6 + level), 100, (8 + level), (6 + level), (6 + level), (6 + level), (8 + level), (6 + level), (6 + level) });
             resetEncounterStatus();
             if (runOrFight() == 1)
             {
@@ -536,15 +542,47 @@ namespace Punktown
                 conclusion(20);
             }
         }
-        
+
+        static void encounterMadScientist(int level)
+        {
+            enemyName = "Mad scientist";
+            Console.WriteLine("{0} (lvl {1}) is approaching with aggressive intentions", enemyName, level);
+            armorInput(new int[11] { 50, 100, (6 + level), 100, (6 + level), (8 + level), (10 + level), (8 + level), (10 + level), (8 + level), (8 + level) });
+            resetEncounterStatus();
+            if (runOrFight() == 1)
+            {
+                return;
+            }
+            do
+            {
+                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
+                {
+                    enemyTurn(2 + level);
+                }
+                declareStatus();
+                actionInput();
+                mainSkill = missOrHit(mainSkill);
+                secondarySkill = missOrHit(secondarySkill);
+                secondaryEffects();
+                armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
+                statusUpdate();
+                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
+            } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
+            if (encounterStatus[0] < 90)
+            {
+                conclusion(20);
+            }
+        }
+
         static void enemyTurn(int power)
         {
             int fullArmor = 10 + skill[5] + inv[4];
             Console.WriteLine("{0} is fightning you!", enemyName);
             //one variable instead of two
-            int iterationNumber = D(20);
+            int iterationNumber = d(20);
             if (iterationNumber + (power * 2) > fullArmor)
             {
+                Console.WriteLine("He hits!");
                 int damage = 0;
                 for (iterationNumber = 0; iterationNumber < power; iterationNumber++)
                 {
@@ -601,8 +639,8 @@ namespace Punktown
                 {
                     endOfAlpha();
                 }
-                temporalStat[0] = temporalStat[0] + 5;
-                temporalStat[1] = temporalStat[1] + 5;
+                temporalStat[0] = temporalStat[0] + 10;
+                temporalStat[1] = temporalStat[1] + 10;
                 temporalStat[2] = temporalStat[2] - ((temporalStat[3] + 2) * (50));
                 Console.WriteLine("You have reached {0} level! You gain 5 additional HP");
                 Console.WriteLine("Choose main skill to improve (23 to remind options)", temporalStat[3]);
@@ -638,26 +676,24 @@ namespace Punktown
                     Console.WriteLine("Type '1' to find random battle");
                     Console.WriteLine("Type '2' to visit huckster");
                     Console.WriteLine("Type '3' to exit");
-                    whereTo();
                     break;
                 case ("1"):
                     Console.WriteLine("Ha! Adventure!");
                     wonder();
-                    whereTo();
                     break;
                 case ("2"):
                     Console.WriteLine("Black market have everything you need!");
                     huckster();
-                    whereTo();
                     break;
                 case ("3"):
                     Console.WriteLine("Good bye!");
+                    Environment.Exit(0);
                     break;
                 default:
                     Console.WriteLine("Is it in Africa? Sorry, I have no idea how to get there");
-                    whereTo();
                     break;
             }
+            whereTo();
         }
 
         static void huckster()
@@ -720,6 +756,16 @@ namespace Punktown
             whereTo();
         }
 
+        static void charCreation()
+        {
+            Console.WriteLine("Hello! This is alpha-version of Punktown, text-based RPG");
+            Console.WriteLine("This is charecter creation section, you will need to pick few skills, that will be more reliable than others");
+            Console.WriteLine("Skill can be main or secondary");
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
+        }
+
         static void endOfAlpha()
         {
             Console.WriteLine("You have succesfully reached level 5. That is the end of alpha-version");
@@ -731,6 +777,7 @@ namespace Punktown
 
         static void Main(string[] args)
         {
+            charCreation();
             firstChapter();
         }
     }
