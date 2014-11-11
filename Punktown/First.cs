@@ -54,16 +54,16 @@ namespace Punktown
             int help = preciseInput(new int[] {1, 2});
             if (help == 1)
             {
-                Console.WriteLine("Hacking (main) is used against any kinds of turrets, cybernetic life-forms or when comfronting computer controlled systems. It is main source of damage in such battles");
+                Console.WriteLine("Hacking (main) is used against any kinds of turrets, cybernetic life-forms or when comfronting computer controlled systems. It is the main source of damage in such battles");
                 Console.WriteLine("Ranged (main) is way to inflict physical damage while maintaining distance. In most cases it lets you avoid damage from melee opponent, but in close range Melee (main) can be more effective");
                 Console.WriteLine("Lockpick (main) is required to open both mechanical and electronics locks");
                 Console.WriteLine("Melee (main) - ability to deal damage at close distance");
-                Console.WriteLine("Athletics (secondary) required to get away from someone or conversevly approach. Also passively increasing armor");
-                Console.WriteLine("Knowledge (secondary) can help charecter to remember vital spots of his tasrget to unlock critical strikes");
+                Console.WriteLine("Athletics (secondary) required to get away from someone or conversely approach. Also passively increasing armor");
+                Console.WriteLine("Knowledge (secondary) can help character to remember vital spots of his target to unlock critical strikes");
                 Console.WriteLine("Notice (secondary) can be used to determine level of defence against random skill");
                 Console.WriteLine("Speech (secondary) have several ways to use. You can intimidate target and force it surrender on low HP, or you can distract to make you next move more successful");
                 Console.WriteLine("Stealth (secondary) can be used to avoid battles. Also damage when breaking stealth is immensely increased");
-                Console.WriteLine("Streetwise (secondary) lets you avoid the battle both at the beginning, before opponent haven't noticed you, or after beginning when you reached certain distance");
+                Console.WriteLine("Streetwise (secondary) lets you avoid the battle both at the beginning, before opponent noticing you, or after beginning when you have reached certain distance");
             }
             if (help == 2)
             {
@@ -274,7 +274,7 @@ namespace Punktown
             }
             else
             {
-                Console.WriteLine("{0} have armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
+                Console.WriteLine("{0} has armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
             }
             skillNumber = d(6) + 4;
             if (armor[skillNumber] == 100)
@@ -283,7 +283,7 @@ namespace Punktown
             }
             else
             {
-                Console.WriteLine("{0} have armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
+                Console.WriteLine("{0} has armor {1} against {2}", enemyName, armor[skillNumber], skillName[skillNumber]);
             }
         }
 
@@ -482,7 +482,7 @@ namespace Punktown
             int result = skill[7] + inv[7] + D(20);
             if (result < armor[7])
             {
-                Console.WriteLine("You have noticed him late! You have to fight!");
+                Console.WriteLine("You noticed him too late! You have to fight!");
                 encounterStatus[2] = 1;
                 return 0;
             }
@@ -682,7 +682,7 @@ namespace Punktown
                     wonder();
                     break;
                 case ("2"):
-                    Console.WriteLine("Black market have everything you need!");
+                    Console.WriteLine("Black market has everything you need!");
                     huckster();
                     break;
                 case ("3"):
@@ -759,7 +759,7 @@ namespace Punktown
         static void charCreation()
         {
             Console.WriteLine("Hello! This is alpha-version of Punktown, text-based RPG");
-            Console.WriteLine("This is charecter creation section, you will need to pick few skills, that will be more reliable than others");
+            Console.WriteLine("This is character creation section, you will need to pick few skills, that will be more reliable than others");
             Console.WriteLine("Skill can be main or secondary");
             Console.WriteLine("");
             Console.WriteLine("");
