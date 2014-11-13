@@ -50,12 +50,12 @@ namespace Punktown
 
         public static void help()
         {
-            Console.WriteLine("You are in 'help' section. Input '1' for skills description, '2' for credits, '3' to exit");
-            int help = preciseInput(new int[] {1, 2});
+            Console.WriteLine("You are in 'help' section. Input '1' for skills description, '2' for credits, '3' to exit help");
+            int help = preciseInput(new int[] {1, 2, 3});
             if (help == 1)
             {
                 Console.WriteLine("Hacking (main) is used against any kinds of turrets, cybernetic life-forms or when comfronting computer controlled systems. It is the main source of damage in such battles");
-                Console.WriteLine("Ranged (main) is way to inflict physical damage while maintaining distance. In most cases it lets you avoid damage from melee opponent, but in close range Melee (main) can be more effective");
+                Console.WriteLine("Ranged (main) is way to inflict physical damage while maintaining distance. In most cases it lets you avoid damage from melee opponent, but in close range Melee (main) can be more effective. Instead of buying bullets and then firing them, you spending credits themselves to fire");
                 Console.WriteLine("Lockpick (main) is required to open both mechanical and electronics locks");
                 Console.WriteLine("Melee (main) - ability to deal damage at close distance");
                 Console.WriteLine("Athletics (secondary) required to get away from someone or conversely approach. Also passively increasing armor");
@@ -129,6 +129,7 @@ namespace Punktown
         static void wonder ()
         {
             int location = d(10);
+            location = 4;
             switch (location)
             {
                 case (1):
@@ -138,9 +139,27 @@ namespace Punktown
                     encounterMadScientist(d(3));
                     break;
                 case (3):
-
+                    encounterTurret(d(3));
                     break;
                 case (4):
+                    encounterChest(d(3));
+                    break;
+                case (5):
+                    
+                    break;
+                case (6):
+
+                    break;
+                case (7):
+
+                    break;
+                case (8):
+
+                    break;
+                case (9):
+
+                    break;
+                case (10):
 
                     break;
                 default:
@@ -370,10 +389,40 @@ namespace Punktown
                 Console.WriteLine("Enter main action");
                 mainSkill = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             }
+            if (mainSkill == 2)
+            {
+                if (temporalStat[4] == 0)
+                {
+                    Console.WriteLine("You don't have credits to fire (1 bullet = 1 credit). Choose another action");
+                    mainSkill = preciseInput(new int[] { 1, 3, 4, 5, 6, 7, 8, 9, 10 });
+                    if ((mainSkill == 1 || mainSkill == 3 || mainSkill == 4) && encounterStatus[0] > 3)
+                    {
+                        Console.WriteLine("You need to be in close range (3 or less) to use Hacking, Lockpick or Melee. Please choose different skill");
+                        mainSkill = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
+                    }
+                }
+                else
+                {
+                    temporalStat[4]--;
+                }
+            }
             if ((mainSkill == 1 || mainSkill == 3 || mainSkill == 4) && encounterStatus[0] > 3)
             {
                 Console.WriteLine("You need to be in close range (3 or less) to use Hacking, Lockpick or Melee. Please choose different skill");
                 mainSkill = preciseInput(new int[] { 2, 5, 6, 7, 8, 9, 10 });
+                if (mainSkill == 2)
+                {
+                    if (temporalStat[4] == 0)
+                    {
+                        Console.WriteLine("You don't have credits to fire (1 bullet = 1 credit). Choose another action");
+                        mainSkill = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
+                    }
+                    else
+                    {
+                        temporalStat[4]--;
+                    }
+                }
+
             }
             Console.WriteLine("Choose secondary action (It is always secondary skill)");
             secondarySkill = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
@@ -488,8 +537,8 @@ namespace Punktown
             }
             encounterStatus[0] = result - armor[7] + 2;
             Console.WriteLine("{0} is {1} meters away, he haven't noticed you yet", enemyName, encounterStatus[0]);
-            Console.WriteLine("Do you want to fight (1) or to retreat tactically? (0)");
-            int decision = preciseInput(new int[] { 0, 1 });
+            Console.WriteLine("Do you want to fight (1) or to retreat tactically? (2)");
+            int decision = preciseInput(new int[] { 1, 2 });
             if (decision == 1)
             {
                 Console.WriteLine("Good luck!");
@@ -524,7 +573,7 @@ namespace Punktown
             }
             do
             {
-                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
+                if (encounterStatus[0] < 4 && encounterStatus[2] == 1 && encounterStatus[1] == 0)
                 {
                     enemyTurn(3 + level);
                 }
@@ -555,7 +604,7 @@ namespace Punktown
             }
             do
             {
-                if (encounterStatus[0] < 4 && encounterStatus[2] == 1)
+                if (encounterStatus[0] < 4 && encounterStatus[2] == 1 && encounterStatus[1] == 0)
                 {
                     enemyTurn(2 + level);
                 }
@@ -566,6 +615,99 @@ namespace Punktown
                 secondaryEffects();
                 armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
                 statusUpdate();
+                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
+            } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
+            if (encounterStatus[0] < 90)
+            {
+                conclusion(20);
+            }
+        }
+
+        static void encounterTurret(int level)
+        {
+            enemyName = "Sentinel turret";
+            Console.WriteLine("{0} (lvl {1}) is standing in your way", enemyName, level);
+            armorInput(new int[11] { 50, (8 + level), (10 + level), (12 + level), (10 + level), 0, (8 + level), 0, 100, (10+level), 100 });
+            resetEncounterStatus();
+            if (runOrFight() == 1)
+            {
+                return;
+            }
+            do
+            {
+                if (encounterStatus[0] < 11 && encounterStatus[2] == 1 && encounterStatus[1] == 0)
+                {
+                    Console.WriteLine("{0} has ranged attack!", enemyName);
+                    enemyTurn(2 + level);
+                }
+                declareStatus();
+                actionInput();
+                mainSkill = missOrHit(mainSkill);
+                secondarySkill = missOrHit(secondarySkill);
+                secondaryEffects();
+                armor[0] = armor[0] - (mainSkillDamage() * damageMultiplier());
+                int becauseTurretWontMove = encounterStatus[0];
+                statusUpdate();
+                encounterStatus[0] = becauseTurretWontMove;
+                Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
+            } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
+            if (encounterStatus[0] < 90)
+            {
+                conclusion(20);
+            }
+        }
+
+        static void encounterChest(int level)
+        {
+            enemyName = "Locked chest";
+            Console.WriteLine("You see {0}", enemyName, level);
+            armorInput(new int[11] { 60, (6+level), 100, 100, 100, 0, (6+level), (6+level), 100, 100, 0 });
+            resetEncounterStatus();
+            if (runOrFight() == 1)
+            {
+                return;
+            }
+            do
+            {
+                declareStatus();
+                actionInput();
+                mainSkill = missOrHit(mainSkill);
+                secondarySkill = missOrHit(secondarySkill);
+                if (mainSkill == 6 || mainSkill == 7 || secondarySkill == 6 || secondarySkill == 7)
+                {
+                    Console.WriteLine("In order to open the chest you need first to damage security system (hacking), then to open mechanical lock (lockpicking) and then to force it open (melee or ranged)");
+                }
+                if (-5 < mainSkill && mainSkill < 0 && encounterStatus[0] < 4)
+                {
+                    Console.WriteLine("You wasn't careful! Security system strike you with electricity for {0} damage!", (4 * level));
+                    Console.WriteLine("You have {0} HP left", temporalStat[0]);
+                    temporalStat[0] = temporalStat[0] - (4 * level);
+                    if (temporalStat[1] <= 0)
+                    {
+                        Console.WriteLine("You have died!");
+                        Environment.Exit(0);
+                    }
+                }
+                secondaryEffects();
+                int variableMainSkillDamage = mainSkillDamage();
+                int variableDamageMultiplier = damageMultiplier();
+                if ((armor[0] > 40) &&  (armor[0] - (variableMainSkillDamage * variableDamageMultiplier) <= 40))
+                {
+                    Console.WriteLine("You've severly damaged security system, now you must use lockpicking");
+                    armor[1] = 100;
+                    armor[3] = 8 + level;
+                }
+                if ((armor[0] > 20) && (armor[0] - (variableMainSkillDamage * variableDamageMultiplier) <= 20))
+                {
+                    Console.WriteLine("You've cracked the lock, but it is stuck. You need to use brute force now");
+                    armor[3] = 100;
+                    armor[2] = 6 + level;
+                    armor[4] = 6 + level;
+                }
+                armor[0] = armor[0] - (variableMainSkillDamage * variableDamageMultiplier);
+                int becauseChestWontMove = encounterStatus[0];
+                statusUpdate();
+                encounterStatus[0] = becauseChestWontMove;
                 Console.WriteLine("{1} has {0} hit points left", armor[0], enemyName);
             } while ((armor[0] - (encounterStatus[4] * 20) > 0) && (encounterStatus[0] < 90));
             if (encounterStatus[0] < 90)
@@ -760,10 +902,26 @@ namespace Punktown
         {
             Console.WriteLine("Hello! This is alpha-version of Punktown, text-based RPG");
             Console.WriteLine("This is character creation section, you will need to pick few skills, that will be more reliable than others");
-            Console.WriteLine("Skill can be main or secondary");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
+            Console.WriteLine("Skill can be main or secondary. Main skills do the most damage to opponent, while secondary skills plays supporting roles");
+            Console.WriteLine("In one turn of the battle you could use main and secondary skill or two secondary skills");
+            Console.WriteLine("You may pick skills now, type 'help' to summon help section where you can find detailed skills description");
+            Console.WriteLine("Right now all you skill is '1' you will have 4 points to increase main skills and 6 for secondary");
+            Console.WriteLine("Please choose main skills to improve");
+            int improve = 0;
+            for (improve = 0; improve < 4; improve++)
+            {
+                int skillToImprove = preciseInput(new int[] { 1, 2, 3, 4 });
+                skill[skillToImprove]++;
+                Console.WriteLine("Your {0} now is {1}, you have {2} points left to spent", skillName[skillToImprove], skill[skillToImprove], (3 - improve));
+            }
+            Console.WriteLine("Please choose secondary skills to improve");
+            for (improve = 0; improve < 6; improve++)
+            {
+                int skillToImprove = preciseInput(new int[] { 5, 6, 7, 8, 9, 10 });
+                skill[skillToImprove]++;
+                Console.WriteLine("Your {0} now is {1}, you have {2} points left to spent", skillName[skillToImprove], skill[skillToImprove], (5 - improve));
+            }
+            Console.WriteLine("Your character is now created!");
         }
 
         static void endOfAlpha()
