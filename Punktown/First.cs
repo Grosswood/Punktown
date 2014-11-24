@@ -1191,6 +1191,41 @@ namespace Punktown
             Console.WriteLine("Your progress saved!");
         }
 
+        static int load()
+        {
+            int numberOfValue = 1;
+            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PunktownAutoSave.txt");
+            if (!File.Exists(fileName))
+            {
+                Console.WriteLine("You don't have auto-save file yet. You need to create new character");
+                return 2;
+            }
+            else
+            {
+                string[] save = File.ReadAllLines(fileName);
+                foreach (string line in save)
+                {
+                    int number = Int32.Parse(line);
+                    if (numberOfValue < 12)
+                    {
+                        //Console.WriteLine(answer - 1);
+                        //Console.WriteLine(number);
+                        skill[numberOfValue - 1] = number;
+                    }
+                    else if (numberOfValue < 23)
+                    {
+                        inv[numberOfValue - 12] = number;
+                    }
+                    else
+                    {
+                        temporalStat[numberOfValue - 23] = number;
+                    }
+                    numberOfValue++;
+                }
+                return 1;
+            }
+        }
+
         static void huckster()
         {
             Console.WriteLine("You have {0} bullets", temporalStat[4]);
@@ -1258,31 +1293,9 @@ namespace Punktown
             int answer = preciseInput(new int[] { 1, 2 });
             if (answer == 1)
             {
-                //here we need file not found exception
-                var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "PunktownAutoSave.txt");
-                string[] save = File.ReadAllLines(fileName);
-                foreach (string line in save)
-                {
-                    int number = Int32.Parse(line);
-                    if (answer < 12)
-                    {
-                        //Console.WriteLine(answer - 1);
-                        //Console.WriteLine(number);
-                        skill[answer - 1] = number;
-                    }
-                    else if (answer < 23)
-                    {
-                        inv[answer - 12] = number;
-                    }
-                    else
-                    {
-                        temporalStat[answer - 23] = number;
-                    }
-                    
-                    answer++;
-                }
+                answer = load();
             }
-            else
+            if (answer == 2)
             {
                 Console.WriteLine("This is character creation section, you will need to pick few skills, that will be more reliable than others");
                 Console.WriteLine("Skill can be main or secondary. Main skills do the most damage to opponent, while secondary skills plays supporting roles");
