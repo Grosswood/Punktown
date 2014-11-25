@@ -63,7 +63,7 @@ namespace Punktown
                 Console.WriteLine("Knowledge (secondary) can help character to remember vital spots of his target to unlock critical strikes");
                 Console.WriteLine("Notice (secondary) can be used to determine level of defence against random skill");
                 Console.WriteLine("Speech (secondary) have several ways to use. You can intimidate target and force it surrender on low HP, or you can distract to make you next move more successful");
-                Console.WriteLine("Stealth (secondary) can be used to avoid battles. Also damage when breaking stealth is immensely increased");
+                Console.WriteLine("Stealth (secondary) can be used to avoid battles. Also damage when breaking stealth is immensely increased. Beware that success of stealth also influenced by a lot of things like monster awareness of your presence or distance to monster");
                 Console.WriteLine("Streetwise (secondary) lets you avoid the battle both at the beginning, before opponent noticing you, or after beginning when you have reached certain distance");
             }
             if (help == 2)
@@ -183,7 +183,11 @@ namespace Punktown
             else
             {
                 int result = D(20);
-                if (skill[skillNumber] + inv[skillNumber] + result + (d(6) * encounterStatus[5]) < armor[skillNumber])
+                if (skillNumber == 9)
+                {
+                    skillNumber = skillNumber * missOrHitStealth(result); //stealth need own function because there more factors for it
+                }
+                else if (skill[skillNumber] + inv[skillNumber] + result + (d(6) * encounterStatus[5]) < armor[skillNumber])
                 {
                     Console.WriteLine("{0} misses!", skillName[skillNumber]);
                     skillNumber = -skillNumber;
@@ -198,6 +202,20 @@ namespace Punktown
                 }
             }
             return skillNumber;
+        }
+
+        static int missOrHitStealth(int result)
+        {
+            if (skill[9] + inv[9] + result + (encounterStatus[0] - 5) + (d(6) * encounterStatus[5]) < armor[9] + (encounterStatus[2] * 5))
+            {
+                Console.WriteLine("{0} misses!", skillName[9]);
+                return -1;
+            }
+            else
+            {
+                Console.WriteLine("{0} hits!", skillName[9]);
+                return 1;
+            }
         }
 
         static void armorInput (int [] valuesToInput)
