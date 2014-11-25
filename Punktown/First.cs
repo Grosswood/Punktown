@@ -1208,8 +1208,6 @@ namespace Punktown
                     int number = Int32.Parse(line);
                     if (numberOfValue < 12)
                     {
-                        //Console.WriteLine(answer - 1);
-                        //Console.WriteLine(number);
                         skill[numberOfValue - 1] = number;
                     }
                     else if (numberOfValue < 23)
@@ -1226,59 +1224,68 @@ namespace Punktown
             }
         }
 
+        static int twoWhenMain(int whatToBuy)
+        {
+            int mult = 1;
+            if (whatToBuy < 5)
+            {
+                mult = 2;
+            }
+            return mult;
+        }
+
         static void huckster()
         {
-            Console.WriteLine("You have {0} bullets", temporalStat[4]);
-            Console.WriteLine("Input '1' to buy first aid kit (20 HP/ 10 bullets), '2' to upgrade your gear, '3' to exit");
-            int whatToBuy = preciseInput(new int[] {1, 2, 3 });
-            if (whatToBuy == 1)
+            int whatToBuy = 4;
+            do
             {
-                if (temporalStat[1] == temporalStat[0])
+                if (whatToBuy == 1)
                 {
-                    Console.WriteLine("You are completely healthy, no need for first aid kits");
-                    huckster();
-                }
-                else if (temporalStat[4] < 10)
-                {
-                    Console.WriteLine("You don't have enough bullets!");
-                    huckster();
-                }
-                else
-                {
-                    temporalStat[4] = temporalStat[4] - 10;
-                    temporalStat[1] = temporalStat[1] + 20;
-                    if (temporalStat[1] > temporalStat[0])
+                    if (temporalStat[1] == temporalStat[0])
                     {
-                        temporalStat[1] = temporalStat[0];
+                        Console.WriteLine("You are completely healthy, no need for first aid kits");
                     }
-                    Console.WriteLine("You now have {0} HP", temporalStat[1]);
-                    huckster();
+                    else if (temporalStat[4] < 10)
+                    {
+                        Console.WriteLine("You don't have enough bullets!");
+                    }
+                    else
+                    {
+                        temporalStat[4] = temporalStat[4] - 10;
+                        temporalStat[1] = temporalStat[1] + 20;
+                        if (temporalStat[1] > temporalStat[0])
+                        {
+                            temporalStat[1] = temporalStat[0];
+                        }
+                        Console.WriteLine("You now have {0} HP", temporalStat[1]);
+                    }
                 }
-            }
-            if (whatToBuy == 2)
-            {
-                for (whatToBuy = 1; whatToBuy < 11; whatToBuy++)
+                if (whatToBuy == 2)
                 {
-                    Console.WriteLine("'{0}' to upgrade {1}({2}) to {3} for {4} bullets", whatToBuy, toolName[whatToBuy], skillName[whatToBuy], (inv[whatToBuy] + 1), ((inv[whatToBuy] + 1) * 10));
+                    int mult = 1;
+                    for (whatToBuy = 1; whatToBuy < 11; whatToBuy++)
+                    {
+                        mult = twoWhenMain(whatToBuy);
+                        Console.WriteLine("'{0}' to upgrade {1} ({2}) to {3} for {4} bullets", whatToBuy, toolName[whatToBuy], skillName[whatToBuy], (inv[whatToBuy] + 1), ((inv[whatToBuy] + 1) * 10 * mult));
+                    }
+                    whatToBuy = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                    mult = twoWhenMain(whatToBuy);
+                    if (temporalStat[4] < ((inv[whatToBuy] + 1) * 10 * mult))
+                    {
+                        Console.WriteLine("You don't have enough bullets!");
+                    }
+                    else
+                    {
+                        temporalStat[4] = temporalStat[4] - ((inv[whatToBuy] + 1) * 10 * mult);
+                        inv[whatToBuy] = inv[whatToBuy] + 1;
+                        Console.WriteLine("Your {0} quality now is {1}", toolName[whatToBuy], inv[whatToBuy]);
+                    }
                 }
-                whatToBuy = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-                if (temporalStat[4] < ((inv[whatToBuy] + 1) * 10) )
-                {
-                    Console.WriteLine("You don't have enough bullets!");
-                }
-                else
-                {
-                    temporalStat[4] = temporalStat[4] - ((inv[whatToBuy] + 1) * 10);
-                    inv[whatToBuy] = inv[whatToBuy] + 1;
-                    Console.WriteLine("Your {0} quality now is {1}", toolName[whatToBuy], inv[whatToBuy]);
-                }
-                huckster();
-            }
-            if (whatToBuy == 3)
-            {
-                Console.WriteLine("See you soon!");
-            }
-
+                Console.WriteLine("You have {0} bullets and {1}/{2} HP", temporalStat[4], temporalStat[1], temporalStat[0]);
+                Console.WriteLine("Input '1' to buy first aid kit (20 HP/ 10 bullets), '2' to upgrade your gear, '3' to exit");
+                whatToBuy = preciseInput(new int[] { 1, 2, 3 });
+            } while (whatToBuy != 3);
+            Console.WriteLine("See you soon!");
         }
 
         static void firstChapter()
