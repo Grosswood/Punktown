@@ -59,7 +59,7 @@ namespace Punktown
                 Console.WriteLine("Ranged (main) is way to inflict physical damage while maintaining distance. In most cases it lets you avoid damage from melee opponent, but in close range Melee (main) can be more effective. You need bullets to fire, but beware, bullets also used as money here.");
                 Console.WriteLine("Lockpick (main) is required to open both mechanical and electronics locks");
                 Console.WriteLine("Melee (main) - ability to deal damage at close distance");
-                Console.WriteLine("Athletics (secondary) required to get away from someone or conversely approach. Also passively increasing armor");
+                Console.WriteLine("Athletics (secondary) required to get away from someone or conversely approach. Also passively increasing armor. When you miss with Athletics it doesn't mean you are not running. It means that your opponent running faster, that's why you still get to choose direction for running");
                 Console.WriteLine("Knowledge (secondary) can help character to remember vital spots of his target to unlock critical strikes");
                 Console.WriteLine("Notice (secondary) can be used to determine level of defence against random skill");
                 Console.WriteLine("Speech (secondary) have several ways to use. You can intimidate target and force it surrender on low HP, or you can distract to make you next move more successful");
@@ -900,8 +900,8 @@ namespace Punktown
                 if (-5 < mainSkill && mainSkill < 0 && encounterStatus[0] < 4)
                 {
                     Console.WriteLine("You wasn't careful! Security system strike you with electricity for {0} damage!", (4 * level));
-                    Console.WriteLine("You have {0} HP left", temporalStat[0]);
-                    temporalStat[0] = temporalStat[0] - (4 * level);
+                    Console.WriteLine("You have {0} HP left", temporalStat[1]);
+                    temporalStat[1] = temporalStat[1] - (4 * level);
                     if (temporalStat[1] <= 0)
                     {
                         Console.WriteLine("You have died!");
@@ -1077,6 +1077,8 @@ namespace Punktown
                 if (temporalStat[1] <= 0)
                 {
                     Console.WriteLine("You have died!");
+                    Console.ReadLine();
+                    System.Threading.Thread.Sleep(3000);
                     Environment.Exit(0);
                 }
             }
@@ -1286,9 +1288,14 @@ namespace Punktown
                         mult = twoWhenMain(whatToBuy);
                         Console.WriteLine("'{0}' to upgrade {1} ({2}) to {3} for {4} bullets", whatToBuy, toolName[whatToBuy], skillName[whatToBuy], (inv[whatToBuy] + 1), ((inv[whatToBuy] + 1) * 10 * mult));
                     }
-                    whatToBuy = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+                    Console.WriteLine("'11' to leave upgrade section");
+                    whatToBuy = preciseInput(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 });
                     mult = twoWhenMain(whatToBuy);
-                    if (temporalStat[4] < ((inv[whatToBuy] + 1) * 10 * mult))
+                    if (whatToBuy == 11)
+                    {
+                        //just do nothing
+                    }
+                    else if (temporalStat[4] < ((inv[whatToBuy] + 1) * 10 * mult))
                     {
                         Console.WriteLine("You don't have enough bullets!");
                     }
